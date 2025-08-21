@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package cms.auth.v1;
+
+option go_package = "cms-server/proto/auth;authpb";
+
+service AuthService {
+  rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse);
+}
+
+message CheckTokenRequest {
+  string token = 1;
+}
+
+message CheckTokenResponse {
+  bool data = 1;
+  string message = 2;
+}
