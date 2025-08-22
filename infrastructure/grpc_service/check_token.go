@@ -9,9 +9,6 @@ import (
 )
 
 func (a *authService) CheckToken(ctx context.Context, req *authpb.CheckTokenRequest) (*authpb.CheckTokenResponse, error) {
-	if req.GetToken() == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "Không tìm thấy mã truyền lên")
-	}
 	ok, err := a.checkTokenUc.CheckToken(req.GetToken())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())

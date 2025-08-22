@@ -3,6 +3,7 @@ package main
 import (
 	"cms-server/bootstrap"
 	"cms-server/infrastructure/api/router"
+	grpcservice "cms-server/infrastructure/grpc_service"
 	"context"
 	"time"
 
@@ -56,7 +57,8 @@ func StartGRPCServer() {
 	env := app.Env
 	log := app.Log
 	db := app.DB
-	grpcSrv := newGRPCServer(db, env, log)
+	authService := grpcservice.NewAuthService(db, env)
+	grpcSrv := grpcservice.NewGRPCServer(env.PORT_GRPC, authService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {

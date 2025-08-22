@@ -1,4 +1,4 @@
-package pkgjwt
+package jwt
 
 import (
 	"time"

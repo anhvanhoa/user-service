@@ -2,17 +2,171 @@ syntax = "proto3";
 
 package cms.auth.v1;
 
-option go_package = "cms-server/proto/auth;authpb";
+option go_package = "cms-server/proto;authpb";
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
 
 service AuthService {
+  // Existing method
   rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse);
+  
+  // Login and authentication
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  
+  // Account verification
+  rpc VerifyAccount(VerifyAccountRequest) returns (VerifyAccountResponse);
+  
+  // Password reset
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  rpc ResetPasswordByCode(ResetPasswordByCodeRequest) returns (ResetPasswordByCodeResponse);
+  rpc ResetPasswordByToken(ResetPasswordByTokenRequest) returns (ResetPasswordByTokenResponse);
+  
+  // Code verification
+  rpc CheckCode(CheckCodeRequest) returns (CheckCodeResponse);
 }
 
+// Common response structure
+message CommonResponse {
+  bool success = 1;
+  string message = 2;
+  string error_code = 3;
+}
+
+// User information
+message UserInfo {
+  string id = 1;
+  string email = 2;
+  string phone = 3;
+  string full_name = 4;
+  string avatar = 5;
+  string bio = 6;
+  string address = 7;
+  google.protobuf.Timestamp birthday = 8;
+}
+
+// Check Token
 message CheckTokenRequest {
-  string token = 1;
+  string token = 1 [(validate.rules).string.min_len = 1];
 }
 
 message CheckTokenResponse {
   bool data = 1;
+  string message = 2;
+}
+
+// Login
+message LoginRequest {
+  string email_or_phone = 1 [(validate.rules).string.min_len = 1];
+  string password = 2 [(validate.rules).string.min_len = 6];
+  string os = 3 [(validate.rules).string.min_len = 1];
+}
+
+message LoginResponse {
+  UserInfo user = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  string message = 4;
+}
+
+// Register
+message RegisterRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string full_name = 2 [(validate.rules).string.min_len = 2, (validate.rules).string.max_len = 100];
+  string password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string confirm_password = 4 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string code = 5 [(validate.rules).string.min_len = 1];
+  string os = 6 [(validate.rules).string.min_len = 1];
+}
+
+message RegisterResponse {
+  UserInfo user = 1;
+  string token = 2;
+  string message = 3;
+}
+
+// Refresh Token
+message RefreshTokenRequest {
+  string refresh_token = 1 [(validate.rules).string.min_len = 1];
+  string os = 2 [(validate.rules).string.min_len = 1];
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string message = 3;
+}
+
+// Logout
+message LogoutRequest {
+  string token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message LogoutResponse {
+  string message = 1;
+}
+
+// Verify Account
+message VerifyAccountRequest {
+  string token = 1 [(validate.rules).string.min_len = 1];
+}
+
+message VerifyAccountResponse {
+  string message = 1;
+}
+
+// Forgot Password
+message ForgotPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string os = 2 [(validate.rules).string.min_len = 1];
+  ForgotPasswordType method = 3 [(validate.rules).enum.defined_only = true];
+}
+
+enum ForgotPasswordType {
+  FORGOT_BY_CODE = 0;
+  FORGOT_BY_TOKEN = 1;
+}
+
+message ForgotPasswordResponse {
+  UserInfo user = 1;
+  string token = 2;
+  string code = 3;
+  string message = 4;
+}
+
+// Reset Password By Code
+message ResetPasswordByCodeRequest {
+  string code = 1 [(validate.rules).string.min_len = 1];
+  string email = 2 [(validate.rules).string.email = true];
+  string new_password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string confirm_password = 4 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+}
+
+message ResetPasswordByCodeResponse {
+  string message = 1;
+}
+
+// Reset Password By Token
+message ResetPasswordByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 1];
+  string new_password = 2 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string confirm_password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+}
+
+message ResetPasswordByTokenResponse {
+  string message = 1;
+}
+
+// Check Code
+message CheckCodeRequest {
+  string code = 1 [(validate.rules).string.min_len = 1];
+  string email = 2 [(validate.rules).string.email = true];
+}
+
+message CheckCodeResponse {
+  bool valid = 1;
   string message = 2;
 }

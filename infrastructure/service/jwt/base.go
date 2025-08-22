@@ -1,4 +1,4 @@
-package pkgjwt
+package jwt
 
 import (
 	serviceJwt "cms-server/domain/service/jwt"
@@ -92,8 +92,8 @@ func (j *jwtImpl) VerifyAuthToken(token string) (*serviceJwt.AuthClaims, error) 
 	}, nil
 }
 
-func (j *jwtImpl) GenForgotPasswordToken(id, fullName string, exp time.Time) (string, error) {
-	data := NewForgotClaims(id, fullName, exp)
+func (j *jwtImpl) GenForgotPasswordToken(id, code string, exp time.Time) (string, error) {
+	data := NewForgotClaims(id, code, exp)
 	token := j.generateToken(data)
 	return token.SignedString([]byte(j.secretKey))
 }
