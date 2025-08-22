@@ -1,7 +1,7 @@
 package handler
 
 import (
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	pkgres "cms-server/infrastructure/service/response"
 	"errors"
 
@@ -23,7 +23,7 @@ func (h *authHandlerImpl) Forgot(c *fiber.Ctx) error {
 	os := c.Get("User-Agent")
 	resForpass, err := h.forgotUc.ForgotPassword(body.Email, os, body.Type)
 
-	if errors.Is(err, authUC.ErrValidateForgotPassword) {
+	if errors.Is(err, usecase.ErrValidateForgotPassword) {
 		err := pkgres.Err(err).BadReq()
 		return h.log.Log(c, err)
 	} else if err != nil {
@@ -32,7 +32,7 @@ func (h *authHandlerImpl) Forgot(c *fiber.Ctx) error {
 	}
 
 	var link string
-	if body.Type == authUC.ForgotByToken {
+	if body.Type == usecase.ForgotByToken {
 		link = h.env.FRONTEND_URL + "/auth/forgot-password?code=" + resForpass.Token
 	}
 	if err := h.forgotUc.SendEmailForgotPassword(resForpass.User, resForpass.Code, link); err != nil {

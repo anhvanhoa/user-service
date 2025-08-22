@@ -1,7 +1,7 @@
 package grpcservice
 
 import (
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	proto "cms-server/proto/gen/auth/v1"
 	"context"
 	"regexp"
@@ -45,7 +45,7 @@ func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) 
 	}
 
 	// Create register request
-	registerReq := authUC.RegisterReq{
+	registerReq := usecase.RegisterReq{
 		Email:           req.GetEmail(),
 		FullName:        req.GetFullName(),
 		Password:        req.GetPassword(),

@@ -1,7 +1,7 @@
 package grpcservice
 
 import (
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	proto "cms-server/proto/gen/auth/v1"
 	"context"
 
@@ -12,12 +12,12 @@ import (
 
 func (a *authService) ForgotPassword(ctx context.Context, req *proto.ForgotPasswordRequest) (*proto.ForgotPasswordResponse, error) {
 	// Convert method to usecase type
-	var method authUC.ForgotPasswordType
+	var method usecase.ForgotPasswordType
 	switch req.GetMethod() {
 	case proto.ForgotPasswordType_FORGOT_PASSWORD_TYPE_UNSPECIFIED:
-		method = authUC.ForgotByCode
+		method = usecase.ForgotByCode
 	case proto.ForgotPasswordType_FORGOT_PASSWORD_TYPE_TOKEN:
-		method = authUC.ForgotByToken
+		method = usecase.ForgotByToken
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "Phương thức xác thực không hợp lệ")
 	}

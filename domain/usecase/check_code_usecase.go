@@ -1,4 +1,4 @@
-package authUC
+package usecase
 
 import (
 	"cms-server/domain/repository"

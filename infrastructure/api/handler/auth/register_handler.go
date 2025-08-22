@@ -2,7 +2,7 @@ package handler
 
 import (
 	"cms-server/constants"
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	pkgres "cms-server/infrastructure/service/response"
 	"time"
 
@@ -37,7 +37,7 @@ func (rh *authHandlerImpl) Register(c *fiber.Ctx) error {
 	expAt := time.Now().Add(time.Second * constants.VerifyExpiredAt)
 	body.Code = rh.registerUc.GengerateCode(6)
 	os := c.Get("User-Agent")
-	dataRegister := authUC.RegisterReq{
+	dataRegister := usecase.RegisterReq{
 		Email:           body.Email,
 		FullName:        body.FullName,
 		Password:        body.Password,

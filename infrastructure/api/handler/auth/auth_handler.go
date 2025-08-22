@@ -2,7 +2,7 @@ package handler
 
 import (
 	"cms-server/bootstrap"
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	pkglog "cms-server/infrastructure/service/logger"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,29 +25,29 @@ type authHandlerImpl struct {
 	env             *bootstrap.Env
 	validate        bootstrap.IValidator
 	log             pkglog.Logger
-	checkTokenUc    authUC.CheckTokenUsecase
-	checkCodeUc     authUC.CheckCodeUsecase
-	forgotUc        authUC.ForgotPasswordUsecase
-	loginUc         authUC.LoginUsecase
-	logoutUc        authUC.LogoutUsecase
-	refreshUc       authUC.RefreshUsecase
-	registerUc      authUC.RegisterUsecase
-	resetCodeUc     authUC.ResetPasswordByCodeUsecase
-	resetTokenUc    authUC.ResetPasswordByTokenUsecase
-	verifyAccountUc authUC.VerifyAccountUsecase
+	checkTokenUc    usecase.CheckTokenUsecase
+	checkCodeUc     usecase.CheckCodeUsecase
+	forgotUc        usecase.ForgotPasswordUsecase
+	loginUc         usecase.LoginUsecase
+	logoutUc        usecase.LogoutUsecase
+	refreshUc       usecase.RefreshUsecase
+	registerUc      usecase.RegisterUsecase
+	resetCodeUc     usecase.ResetPasswordByCodeUsecase
+	resetTokenUc    usecase.ResetPasswordByTokenUsecase
+	verifyAccountUc usecase.VerifyAccountUsecase
 }
 
 func NewAuthHandler(
-	checkTokenUc authUC.CheckTokenUsecase,
-	checkCodeUc authUC.CheckCodeUsecase,
-	forgotUc authUC.ForgotPasswordUsecase,
-	loginUc authUC.LoginUsecase,
-	logoutUc authUC.LogoutUsecase,
-	refreshUc authUC.RefreshUsecase,
-	registerUc authUC.RegisterUsecase,
-	resetCodeUc authUC.ResetPasswordByCodeUsecase,
-	resetTokenUc authUC.ResetPasswordByTokenUsecase,
-	verifyAccountUc authUC.VerifyAccountUsecase,
+	checkTokenUc usecase.CheckTokenUsecase,
+	checkCodeUc usecase.CheckCodeUsecase,
+	forgotUc usecase.ForgotPasswordUsecase,
+	loginUc usecase.LoginUsecase,
+	logoutUc usecase.LogoutUsecase,
+	refreshUc usecase.RefreshUsecase,
+	registerUc usecase.RegisterUsecase,
+	resetCodeUc usecase.ResetPasswordByCodeUsecase,
+	resetTokenUc usecase.ResetPasswordByTokenUsecase,
+	verifyAccountUc usecase.VerifyAccountUsecase,
 	log pkglog.Logger,
 	env *bootstrap.Env,
 	validate bootstrap.IValidator,

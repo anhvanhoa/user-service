@@ -1,6 +1,6 @@
 package handler
 
-import authUC "cms-server/domain/usecase/auth"
+import "cms-server/domain/usecase"
 
 type resetPasswordByTokenReq struct {
 	Token           string `validate:"required"`
@@ -34,6 +34,6 @@ type loginReq struct {
 }
 
 type forgotPasswordReq struct {
-	Email string                    `validate:"required,email"`
-	Type  authUC.ForgotPasswordType `validate:"required,in=ForgotByCode ForgotByToken"`
+	Email string                     `validate:"required,email"`
+	Type  usecase.ForgotPasswordType `validate:"required,in=ForgotByCode ForgotByToken"`
 }

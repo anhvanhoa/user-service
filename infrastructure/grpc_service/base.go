@@ -2,7 +2,7 @@ package grpcservice
 
 import (
 	"cms-server/bootstrap"
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	"cms-server/infrastructure/repo"
 	argonS "cms-server/infrastructure/service/argon"
 	goidS "cms-server/infrastructure/service/goid"
@@ -14,16 +14,16 @@ import (
 
 type authService struct {
 	proto.UnimplementedAuthServiceServer
-	checkTokenUc     authUC.CheckTokenUsecase
-	loginUc          authUC.LoginUsecase
-	registerUc       authUC.RegisterUsecase
-	refreshUc        authUC.RefreshUsecase
-	logoutUc         authUC.LogoutUsecase
-	verifyAccountUc  authUC.VerifyAccountUsecase
-	forgotPasswordUc authUC.ForgotPasswordUsecase
-	resetCodeUc      authUC.ResetPasswordByCodeUsecase
-	resetTokenUc     authUC.ResetPasswordByTokenUsecase
-	checkCodeUc      authUC.CheckCodeUsecase
+	checkTokenUc     usecase.CheckTokenUsecase
+	loginUc          usecase.LoginUsecase
+	registerUc       usecase.RegisterUsecase
+	refreshUc        usecase.RefreshUsecase
+	logoutUc         usecase.LogoutUsecase
+	verifyAccountUc  usecase.VerifyAccountUsecase
+	forgotPasswordUc usecase.ForgotPasswordUsecase
+	resetCodeUc      usecase.ResetPasswordByCodeUsecase
+	resetTokenUc     usecase.ResetPasswordByTokenUsecase
+	checkCodeUc      usecase.CheckCodeUsecase
 }
 
 func NewAuthService(db *pg.DB, env *bootstrap.Env) proto.AuthServiceServer {
@@ -54,15 +54,15 @@ func NewAuthService(db *pg.DB, env *bootstrap.Env) proto.AuthServiceServer {
 	jwtForgotService := jwt.NewJWT(env.JWT_SECRET.Forgot)
 
 	return &authService{
-		checkTokenUc:     authUC.NewCheckTokenUsecase(sessionRepo),
-		loginUc:          authUC.NewLoginUsecase(userRepo, sessionRepo, jwtAccessService, jwtRefreshService, argonService, cacheService),
-		registerUc:       authUC.NewRegisterUsecase(userRepo, sessionRepo, jwtRegisterService, tx, goidService, argonService, cacheService),
-		refreshUc:        authUC.NewRefreshUsecase(sessionRepo, jwtAccessService, jwtRefreshService, cacheService),
-		logoutUc:         authUC.NewLogoutUsecase(sessionRepo, jwtAccessService, cacheService),
-		verifyAccountUc:  authUC.NewVerifyAccountUsecase(userRepo, sessionRepo, jwtRegisterService, cacheService),
-		forgotPasswordUc: authUC.NewForgotPasswordUsecase(userRepo, sessionRepo, tx, jwtForgotService, cacheService),
-		resetCodeUc:      authUC.NewResetPasswordCodeUsecase(userRepo, sessionRepo, cacheService, jwtForgotService, argonService),
-		resetTokenUc:     authUC.NewResetPasswordTokenUsecase(userRepo, sessionRepo, cacheService, jwtForgotService, argonService),
-		checkCodeUc:      authUC.NewCheckCodeUsecase(userRepo, sessionRepo),
+		checkTokenUc:     usecase.NewCheckTokenUsecase(sessionRepo),
+		loginUc:          usecase.NewLoginUsecase(userRepo, sessionRepo, jwtAccessService, jwtRefreshService, argonService, cacheService),
+		registerUc:       usecase.NewRegisterUsecase(userRepo, sessionRepo, jwtRegisterService, tx, goidService, argonService, cacheService),
+		refreshUc:        usecase.NewRefreshUsecase(sessionRepo, jwtAccessService, jwtRefreshService, cacheService),
+		logoutUc:         usecase.NewLogoutUsecase(sessionRepo, jwtAccessService, cacheService),
+		verifyAccountUc:  usecase.NewVerifyAccountUsecase(userRepo, sessionRepo, jwtRegisterService, cacheService),
+		forgotPasswordUc: usecase.NewForgotPasswordUsecase(userRepo, sessionRepo, tx, jwtForgotService, cacheService),
+		resetCodeUc:      usecase.NewResetPasswordCodeUsecase(userRepo, sessionRepo, cacheService, jwtForgotService, argonService),
+		resetTokenUc:     usecase.NewResetPasswordTokenUsecase(userRepo, sessionRepo, cacheService, jwtForgotService, argonService),
+		checkCodeUc:      usecase.NewCheckCodeUsecase(userRepo, sessionRepo),
 	}
 }

@@ -1,7 +1,7 @@
 package router
 
 import (
-	authUC "cms-server/domain/usecase/auth"
+	"cms-server/domain/usecase"
 	handler "cms-server/infrastructure/api/handler/auth"
 	"cms-server/infrastructure/repo"
 	argonS "cms-server/infrastructure/service/argon"
@@ -21,16 +21,16 @@ func (r *Router) initAuthRouter() {
 	argon := argonS.NewArgon()
 	goid := goidS.NewGoId()
 	h := handler.NewAuthHandler(
-		authUC.NewCheckTokenUsecase(sessionRepo),
-		authUC.NewCheckCodeUsecase(userRepo, sessionRepo),
-		authUC.NewForgotPasswordUsecase(userRepo, sessionRepo, tx, jwtForgot, r.cache),
-		authUC.NewLoginUsecase(userRepo, sessionRepo, jwtAccess, jwtRefresh, argon, r.cache),
-		authUC.NewLogoutUsecase(sessionRepo, jwtAccess, r.cache),
-		authUC.NewRefreshUsecase(sessionRepo, jwtAccess, jwtRefresh, r.cache),
-		authUC.NewRegisterUsecase(userRepo, sessionRepo, jwtVerify, tx, goid, argon, r.cache),
-		authUC.NewResetPasswordCodeUsecase(userRepo, sessionRepo, r.cache, jwtForgot, argon),
-		authUC.NewResetPasswordTokenUsecase(userRepo, sessionRepo, r.cache, jwtForgot, argon),
-		authUC.NewVerifyAccountUsecase(userRepo, sessionRepo, jwtVerify, r.cache),
+		usecase.NewCheckTokenUsecase(sessionRepo),
+		usecase.NewCheckCodeUsecase(userRepo, sessionRepo),
+		usecase.NewForgotPasswordUsecase(userRepo, sessionRepo, tx, jwtForgot, r.cache),
+		usecase.NewLoginUsecase(userRepo, sessionRepo, jwtAccess, jwtRefresh, argon, r.cache),
+		usecase.NewLogoutUsecase(sessionRepo, jwtAccess, r.cache),
+		usecase.NewRefreshUsecase(sessionRepo, jwtAccess, jwtRefresh, r.cache),
+		usecase.NewRegisterUsecase(userRepo, sessionRepo, jwtVerify, tx, goid, argon, r.cache),
+		usecase.NewResetPasswordCodeUsecase(userRepo, sessionRepo, r.cache, jwtForgot, argon),
+		usecase.NewResetPasswordTokenUsecase(userRepo, sessionRepo, r.cache, jwtForgot, argon),
+		usecase.NewVerifyAccountUsecase(userRepo, sessionRepo, jwtVerify, r.cache),
 		r.log,
 		r.env,
 		r.valid,
