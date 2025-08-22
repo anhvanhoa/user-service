@@ -41,12 +41,11 @@ func (ur *userRepository) CheckUserExist(val string) (bool, error) {
 
 func (ur *userRepository) UpdateUser(id string, user entity.User) (entity.UserInfor, error) {
 	var setClauses []string
-	var params []interface{}
+	var params []any
 
-	// Sử dụng reflection để lấy danh sách field cần cập nhật
 	v := reflect.ValueOf(user)
 	if v.Kind() == reflect.Ptr {
-		v = v.Elem() // Lấy giá trị thực nếu là pointer
+		v = v.Elem()
 	}
 	t := v.Type()
 
@@ -54,12 +53,10 @@ func (ur *userRepository) UpdateUser(id string, user entity.User) (entity.UserIn
 		field := t.Field(i)
 		value := v.Field(i)
 
-		// Bỏ qua các trường không cần cập nhật
 		if field.Name == "ID" || field.Name == "CreatedAt" {
 			continue
 		}
 
-		// Chỉ thêm vào danh sách cập nhật nếu giá trị không phải zero-value
 		if !value.IsZero() {
 			columnName := field.Tag.Get("pg")
 			setClauses = append(setClauses, fmt.Sprintf("%s = ?", columnName))
@@ -67,7 +64,6 @@ func (ur *userRepository) UpdateUser(id string, user entity.User) (entity.UserIn
 		}
 	}
 
-	// Nếu không có dữ liệu để cập nhật, return sớm
 	if len(setClauses) == 0 {
 		return user.GetInfor(), nil
 	}
