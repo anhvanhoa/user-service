@@ -1,7 +1,7 @@
 package grpcservice
 
 import (
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 	"time"
 
@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (a *authService) RefreshToken(ctx context.Context, req *authpb.RefreshTokenRequest) (*authpb.RefreshTokenResponse, error) {
+func (a *authService) RefreshToken(ctx context.Context, req *proto.RefreshTokenRequest) (*proto.RefreshTokenResponse, error) {
 	// Get session by token
 	if _, err := a.refreshUc.GetSessionByToken(req.GetRefreshToken()); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Phiên làm việc không hợp lệ")
@@ -40,7 +40,7 @@ func (a *authService) RefreshToken(ctx context.Context, req *authpb.RefreshToken
 		return nil, status.Errorf(codes.Internal, "Không thể tạo refresh token")
 	}
 
-	return &authpb.RefreshTokenResponse{
+	return &proto.RefreshTokenResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		Message:      "Làm mới token thành công",

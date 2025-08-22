@@ -7,13 +7,13 @@ import (
 	argonS "cms-server/infrastructure/service/argon"
 	goidS "cms-server/infrastructure/service/goid"
 	"cms-server/infrastructure/service/jwt"
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 
 	"github.com/go-pg/pg/v10"
 )
 
 type authService struct {
-	authpb.UnimplementedAuthServiceServer
+	proto.UnimplementedAuthServiceServer
 	checkTokenUc     authUC.CheckTokenUsecase
 	loginUc          authUC.LoginUsecase
 	registerUc       authUC.RegisterUsecase
@@ -26,7 +26,7 @@ type authService struct {
 	checkCodeUc      authUC.CheckCodeUsecase
 }
 
-func NewAuthService(db *pg.DB, env *bootstrap.Env) authpb.AuthServiceServer {
+func NewAuthService(db *pg.DB, env *bootstrap.Env) proto.AuthServiceServer {
 	// Initialize repositories
 	userRepo := repo.NewUserRepository(db)
 	sessionRepo := repo.NewSessionRepository(db)

@@ -1,39 +1,32 @@
 syntax = "proto3";
 
-package cms.auth.v1;
+package auth.v1;
 
-option go_package = "cms-server/proto;authpb";
-
+import "proto/buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
-import "validate/validate.proto";
+
+option go_package = "auth/v1;proto";
 
 service AuthService {
   // Existing method
   rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse);
-  
+
   // Login and authentication
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
-  
+
   // Account verification
   rpc VerifyAccount(VerifyAccountRequest) returns (VerifyAccountResponse);
-  
+
   // Password reset
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
   rpc ResetPasswordByCode(ResetPasswordByCodeRequest) returns (ResetPasswordByCodeResponse);
   rpc ResetPasswordByToken(ResetPasswordByTokenRequest) returns (ResetPasswordByTokenResponse);
-  
+
   // Code verification
   rpc CheckCode(CheckCodeRequest) returns (CheckCodeResponse);
-}
-
-// Common response structure
-message CommonResponse {
-  bool success = 1;
-  string message = 2;
-  string error_code = 3;
 }
 
 // User information
@@ -50,7 +43,11 @@ message UserInfo {
 
 // Check Token
 message CheckTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 1];
+  string token = 1 [(buf.validate.field).cel = {
+    id: "token_required"
+    message: "Vui lòng nhập token"
+    expression: "this.size() > 0"
+  }];
 }
 
 message CheckTokenResponse {
@@ -60,9 +57,9 @@ message CheckTokenResponse {
 
 // Login
 message LoginRequest {
-  string email_or_phone = 1 [(validate.rules).string.min_len = 1];
-  string password = 2 [(validate.rules).string.min_len = 6];
-  string os = 3 [(validate.rules).string.min_len = 1];
+  string email_or_phone = 1 [(buf.validate.field).string.min_len = 1];
+  string password = 2 [(buf.validate.field).string.min_len = 6];
+  string os = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message LoginResponse {
@@ -74,12 +71,21 @@ message LoginResponse {
 
 // Register
 message RegisterRequest {
-  string email = 1 [(validate.rules).string.email = true];
-  string full_name = 2 [(validate.rules).string.min_len = 2, (validate.rules).string.max_len = 100];
-  string password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
-  string confirm_password = 4 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
-  string code = 5 [(validate.rules).string.min_len = 1];
-  string os = 6 [(validate.rules).string.min_len = 1];
+  string email = 1 [(buf.validate.field).string.email = true];
+  string full_name = 2 [
+    (buf.validate.field).string.min_len = 2,
+    (buf.validate.field).string.max_len = 100
+  ];
+  string password = 3 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
+  string confirm_password = 4 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
+  string code = 5 [(buf.validate.field).string.min_len = 1];
+  string os = 6 [(buf.validate.field).string.min_len = 1];
 }
 
 message RegisterResponse {
@@ -90,8 +96,8 @@ message RegisterResponse {
 
 // Refresh Token
 message RefreshTokenRequest {
-  string refresh_token = 1 [(validate.rules).string.min_len = 1];
-  string os = 2 [(validate.rules).string.min_len = 1];
+  string refresh_token = 1 [(buf.validate.field).string.min_len = 1];
+  string os = 2 [(buf.validate.field).string.min_len = 1];
 }
 
 message RefreshTokenResponse {
@@ -102,7 +108,7 @@ message RefreshTokenResponse {
 
 // Logout
 message LogoutRequest {
-  string token = 1 [(validate.rules).string.min_len = 1];
+  string token = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message LogoutResponse {
@@ -111,7 +117,7 @@ message LogoutResponse {
 
 // Verify Account
 message VerifyAccountRequest {
-  string token = 1 [(validate.rules).string.min_len = 1];
+  string token = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message VerifyAccountResponse {
@@ -120,14 +126,14 @@ message VerifyAccountResponse {
 
 // Forgot Password
 message ForgotPasswordRequest {
-  string email = 1 [(validate.rules).string.email = true];
-  string os = 2 [(validate.rules).string.min_len = 1];
-  ForgotPasswordType method = 3 [(validate.rules).enum.defined_only = true];
+  string email = 1 [(buf.validate.field).string.email = true];
+  string os = 2 [(buf.validate.field).string.min_len = 1];
+  ForgotPasswordType method = 3 [(buf.validate.field).enum.defined_only = true];
 }
 
 enum ForgotPasswordType {
-  FORGOT_BY_CODE = 0;
-  FORGOT_BY_TOKEN = 1;
+  FORGOT_PASSWORD_TYPE_UNSPECIFIED = 0;
+  FORGOT_PASSWORD_TYPE_TOKEN = 1;
 }
 
 message ForgotPasswordResponse {
@@ -139,10 +145,16 @@ message ForgotPasswordResponse {
 
 // Reset Password By Code
 message ResetPasswordByCodeRequest {
-  string code = 1 [(validate.rules).string.min_len = 1];
-  string email = 2 [(validate.rules).string.email = true];
-  string new_password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
-  string confirm_password = 4 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string code = 1 [(buf.validate.field).string.min_len = 1];
+  string email = 2 [(buf.validate.field).string.email = true];
+  string new_password = 3 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
+  string confirm_password = 4 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
 }
 
 message ResetPasswordByCodeResponse {
@@ -151,9 +163,15 @@ message ResetPasswordByCodeResponse {
 
 // Reset Password By Token
 message ResetPasswordByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 1];
-  string new_password = 2 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
-  string confirm_password = 3 [(validate.rules).string.min_len = 6, (validate.rules).string.max_len = 50];
+  string token = 1 [(buf.validate.field).string.min_len = 1];
+  string new_password = 2 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
+  string confirm_password = 3 [
+    (buf.validate.field).string.min_len = 6,
+    (buf.validate.field).string.max_len = 50
+  ];
 }
 
 message ResetPasswordByTokenResponse {
@@ -162,8 +180,8 @@ message ResetPasswordByTokenResponse {
 
 // Check Code
 message CheckCodeRequest {
-  string code = 1 [(validate.rules).string.min_len = 1];
-  string email = 2 [(validate.rules).string.email = true];
+  string code = 1 [(buf.validate.field).string.min_len = 1];
+  string email = 2 [(buf.validate.field).string.email = true];
 }
 
 message CheckCodeResponse {

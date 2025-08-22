@@ -1,14 +1,14 @@
 package grpcservice
 
 import (
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (a *authService) CheckCode(ctx context.Context, req *authpb.CheckCodeRequest) (*authpb.CheckCodeResponse, error) {
+func (a *authService) CheckCode(ctx context.Context, req *proto.CheckCodeRequest) (*proto.CheckCodeResponse, error) {
 	// Check code
 	valid, err := a.checkCodeUc.CheckCode(req.GetCode(), req.GetEmail())
 	if err != nil {
@@ -16,13 +16,13 @@ func (a *authService) CheckCode(ctx context.Context, req *authpb.CheckCodeReques
 	}
 
 	if !valid {
-		return &authpb.CheckCodeResponse{
+		return &proto.CheckCodeResponse{
 			Valid:   false,
 			Message: "Mã xác thực không hợp lệ hoặc đã hết hạn",
 		}, nil
 	}
 
-	return &authpb.CheckCodeResponse{
+	return &proto.CheckCodeResponse{
 		Valid:   true,
 		Message: "Mã xác thực hợp lệ",
 	}, nil

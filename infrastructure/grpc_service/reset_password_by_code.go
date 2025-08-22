@@ -1,14 +1,14 @@
 package grpcservice
 
 import (
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (a *authService) ResetPasswordByCode(ctx context.Context, req *authpb.ResetPasswordByCodeRequest) (*authpb.ResetPasswordByCodeResponse, error) {
+func (a *authService) ResetPasswordByCode(ctx context.Context, req *proto.ResetPasswordByCodeRequest) (*proto.ResetPasswordByCodeResponse, error) {
 	// Business logic validation: check if passwords match
 	if req.GetNewPassword() != req.GetConfirmPassword() {
 		return nil, status.Errorf(codes.InvalidArgument, "Mật khẩu mới và xác nhận mật khẩu không khớp")
@@ -25,7 +25,7 @@ func (a *authService) ResetPasswordByCode(ctx context.Context, req *authpb.Reset
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &authpb.ResetPasswordByCodeResponse{
+	return &proto.ResetPasswordByCodeResponse{
 		Message: "Đặt lại mật khẩu thành công",
 	}, nil
 }

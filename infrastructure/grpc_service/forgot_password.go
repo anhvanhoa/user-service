@@ -2,7 +2,7 @@ package grpcservice
 
 import (
 	authUC "cms-server/domain/usecase/auth"
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 
 	"google.golang.org/grpc/codes"
@@ -10,13 +10,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (a *authService) ForgotPassword(ctx context.Context, req *authpb.ForgotPasswordRequest) (*authpb.ForgotPasswordResponse, error) {
+func (a *authService) ForgotPassword(ctx context.Context, req *proto.ForgotPasswordRequest) (*proto.ForgotPasswordResponse, error) {
 	// Convert method to usecase type
 	var method authUC.ForgotPasswordType
 	switch req.GetMethod() {
-	case authpb.ForgotPasswordType_FORGOT_BY_CODE:
+	case proto.ForgotPasswordType_FORGOT_PASSWORD_TYPE_UNSPECIFIED:
 		method = authUC.ForgotByCode
-	case authpb.ForgotPasswordType_FORGOT_BY_TOKEN:
+	case proto.ForgotPasswordType_FORGOT_PASSWORD_TYPE_TOKEN:
 		method = authUC.ForgotByToken
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "Phương thức xác thực không hợp lệ")
@@ -29,7 +29,7 @@ func (a *authService) ForgotPassword(ctx context.Context, req *authpb.ForgotPass
 	}
 
 	// Convert user to UserInfo
-	userInfo := &authpb.UserInfo{
+	userInfo := &proto.UserInfo{
 		Id:       result.User.ID,
 		Email:    result.User.Email,
 		Phone:    result.User.Phone,
@@ -43,7 +43,7 @@ func (a *authService) ForgotPassword(ctx context.Context, req *authpb.ForgotPass
 		userInfo.Birthday = timestamppb.New(*result.User.Birthday)
 	}
 
-	return &authpb.ForgotPasswordResponse{
+	return &proto.ForgotPasswordResponse{
 		User:    userInfo,
 		Token:   result.Token,
 		Code:    result.Code,

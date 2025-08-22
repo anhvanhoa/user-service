@@ -2,7 +2,7 @@ package grpcservice
 
 import (
 	authUC "cms-server/domain/usecase/auth"
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 	"regexp"
 	"time"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (a *authService) Register(ctx context.Context, req *authpb.RegisterRequest) (*authpb.RegisterResponse, error) {
+func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error) {
 	// Business logic validation: check email format
 	if !isValidEmail(req.GetEmail()) {
 		return nil, status.Errorf(codes.InvalidArgument, "email không đúng định dạng")
@@ -61,7 +61,7 @@ func (a *authService) Register(ctx context.Context, req *authpb.RegisterRequest)
 	}
 
 	// Convert user to UserInfo
-	userInfo := &authpb.UserInfo{
+	userInfo := &proto.UserInfo{
 		Id:       result.UserInfor.ID,
 		Email:    result.UserInfor.Email,
 		Phone:    result.UserInfor.Phone,
@@ -75,7 +75,7 @@ func (a *authService) Register(ctx context.Context, req *authpb.RegisterRequest)
 		userInfo.Birthday = timestamppb.New(*result.UserInfor.Birthday)
 	}
 
-	return &authpb.RegisterResponse{
+	return &proto.RegisterResponse{
 		User:    userInfo,
 		Token:   result.Token,
 		Message: "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",

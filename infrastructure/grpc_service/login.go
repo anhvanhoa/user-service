@@ -1,7 +1,7 @@
 package grpcservice
 
 import (
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 	"regexp"
 	"time"
@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (a *authService) Login(ctx context.Context, req *authpb.LoginRequest) (*authpb.LoginResponse, error) {
+func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*proto.LoginResponse, error) {
 	// Business logic validation: check if email_or_phone is valid format
 	identifier := req.GetEmailOrPhone()
 	if !isValidEmail(identifier) && !isValidPhone(identifier) {
@@ -48,7 +48,7 @@ func (a *authService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 	}
 
 	// Convert user to UserInfo
-	userInfo := &authpb.UserInfo{
+	userInfo := &proto.UserInfo{
 		Id:       user.ID,
 		Email:    user.Email,
 		Phone:    user.Phone,
@@ -62,7 +62,7 @@ func (a *authService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 		userInfo.Birthday = timestamppb.New(*user.Birthday)
 	}
 
-	return &authpb.LoginResponse{
+	return &proto.LoginResponse{
 		User:         userInfo,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

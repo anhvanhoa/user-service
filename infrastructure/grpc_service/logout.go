@@ -1,14 +1,14 @@
 package grpcservice
 
 import (
-	authpb "cms-server/proto"
+	proto "cms-server/proto/gen/auth/v1"
 	"context"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (a *authService) Logout(ctx context.Context, req *authpb.LogoutRequest) (*authpb.LogoutResponse, error) {
+func (a *authService) Logout(ctx context.Context, req *proto.LogoutRequest) (*proto.LogoutResponse, error) {
 	// Verify token
 	if err := a.logoutUc.VerifyToken(req.GetToken()); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "Token không hợp lệ")
@@ -19,7 +19,7 @@ func (a *authService) Logout(ctx context.Context, req *authpb.LogoutRequest) (*a
 		return nil, status.Errorf(codes.Internal, "Không thể đăng xuất")
 	}
 
-	return &authpb.LogoutResponse{
+	return &proto.LogoutResponse{
 		Message: "Đăng xuất thành công",
 	}, nil
 }
