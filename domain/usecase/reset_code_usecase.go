@@ -5,7 +5,7 @@ import (
 	"cms-server/domain/repository"
 	"cms-server/domain/service/argon"
 	"cms-server/domain/service/cache"
-	serviceError "cms-server/domain/service/error"
+	se "cms-server/domain/service/error"
 	serviceJwt "cms-server/domain/service/jwt"
 )
 
@@ -21,6 +21,12 @@ type ResetPasswordByCodeUsecaseImpl struct {
 	jwt         serviceJwt.JwtService
 	argon       argon.Argon
 }
+
+var (
+	ErrNotFoundUser   = se.NewErr("Không tìm thấy người dùng")
+	ErrHashPassword   = se.NewErr("Không thể mã hóa mật khẩu")
+	ErrUpdatePassword = se.NewErr("Không thể cập nhật mật khẩu")
+)
 
 func NewResetPasswordCodeUsecase(
 	userRepo repository.UserRepository,
@@ -41,12 +47,12 @@ func NewResetPasswordCodeUsecase(
 func (uc *ResetPasswordByCodeUsecaseImpl) VerifySession(code, email string) (string, error) {
 	user, err := uc.userRepo.GetUserByEmail(email)
 	if err != nil {
-		return "", serviceError.NewErrorApp("Không tìm thấy người dùng")
+		return "", ErrNotFoundUser
 	}
 	key := code + user.ID
 	if _, err := uc.cache.Get(key); err != nil {
 		if _, err := uc.sessionRepo.GetSessionForgotAliveByTokenAndIdUser(code, user.ID); err != nil {
-			return "", serviceError.NewErrorApp("Phiên làm việc không hợp lệ hoặc đã hết hạn")
+			return "", ErrNotFoundSession
 		}
 	}
 	go func() {
@@ -59,11 +65,11 @@ func (uc *ResetPasswordByCodeUsecaseImpl) VerifySession(code, email string) (str
 func (uc *ResetPasswordByCodeUsecaseImpl) ResetPass(IdUser, Password, ConfirmPassword string) error {
 	ConfirmPassword, err := uc.argon.HashPassword(ConfirmPassword)
 	if err != nil {
-		return serviceError.NewErrorApp("Không thể mã hóa mật khẩu")
+		return ErrHashPassword
 	}
 
 	if _, err = uc.userRepo.UpdateUser(IdUser, entity.User{Password: ConfirmPassword}); err != nil {
-		return serviceError.NewErrorApp("Không thể cập nhật mật khẩu")
+		return ErrUpdatePassword
 	}
 	return nil
 }

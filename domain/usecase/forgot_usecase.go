@@ -5,7 +5,7 @@ import (
 	"cms-server/domain/entity"
 	"cms-server/domain/repository"
 	"cms-server/domain/service/cache"
-	serviceError "cms-server/domain/service/error"
+	se "cms-server/domain/service/error"
 	serviceJwt "cms-server/domain/service/jwt"
 	"math/rand"
 	"strconv"
@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	ErrValidateForgotPassword = serviceError.NewErrorApp("Phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
+	ErrValidateForgotPassword = se.NewErr("Phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
 )
 
 type ForgotPasswordRes struct {
@@ -75,7 +75,7 @@ func (uc *forgotPasswordUsecaseImpl) saveCodeOrToken(typeForgot ForgotPasswordTy
 	}
 	if err := uc.cache.Set(key, []byte(codeOrToken), constants.ForgotExpiredAt*time.Minute); err != nil {
 		if err := uc.sessionRepo.CreateSession(session); err != nil {
-			return serviceError.NewErrorApp("không thể tạo phiên làm việc")
+			return se.NewErr("không thể tạo phiên làm việc")
 		}
 	} else {
 		go uc.sessionRepo.CreateSession(session)

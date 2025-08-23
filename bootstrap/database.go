@@ -1,14 +1,14 @@
 package bootstrap
 
 import (
+	"cms-server/domain/service/logger"
 	"cms-server/infrastructure/service/database"
-	pkglog "cms-server/infrastructure/service/logger"
 
 	"github.com/go-pg/pg/extra/pgdebug/v10"
 	"github.com/go-pg/pg/v10"
 )
 
-func NewPostgresDB(env *Env, log pkglog.Logger) *pg.DB {
+func NewPostgresDB(env *Env, log logger.Log) *pg.DB {
 	// Connect to the database
 	opt, err := pg.ParseURL(env.URL_DB)
 	if err != nil {

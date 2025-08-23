@@ -1,30 +1,31 @@
 package serviceError
 
-type ErrorApp interface {
+type ErrApp interface {
 	Error() string
-	SetMessage(message string) ErrorApp
-	SetData(data any) ErrorApp
-	Code(code int) ErrorApp
+	Code(code int) ErrApp
 	GetCode() int
-	BadReq() ErrorApp
-	UnprocessableEntity() ErrorApp
-	NotFound() ErrorApp
-	Unauthorized() ErrorApp
-	Forbidden() ErrorApp
-	Conflict() ErrorApp
-	InternalServerError() ErrorApp
 }
 
-type errorApp struct {
+type errApp struct {
 	message string
+	code    int
 }
 
-func NewErrorApp(message string) *errorApp {
-	return &errorApp{
+func NewErr(message string) *errApp {
+	return &errApp{
 		message: message,
 	}
 }
 
-func (e *errorApp) Error() string {
+func (e *errApp) Error() string {
 	return e.message
+}
+
+func (e *errApp) Code(code int) ErrApp {
+	e.code = code
+	return e
+}
+
+func (e *errApp) GetCode() int {
+	return e.code
 }

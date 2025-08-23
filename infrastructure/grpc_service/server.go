@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 
+	loggerI "cms-server/domain/service/logger"
 	proto "cms-server/proto/gen/auth/v1"
 
 	"buf.build/go/protovalidate"
@@ -18,7 +19,7 @@ type GRPCServer struct {
 	port   string
 }
 
-func NewGRPCServer(port string, authService proto.AuthServiceServer) *GRPCServer {
+func NewGRPCServer(port string, authService proto.AuthServiceServer, log loggerI.Log) *GRPCServer {
 	validator, err := protovalidate.New()
 	if err != nil {
 		panic(err)
@@ -26,7 +27,7 @@ func NewGRPCServer(port string, authService proto.AuthServiceServer) *GRPCServer
 	server := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			protovalidate_middleware.UnaryServerInterceptor(validator),
-			LoggingInterceptor(),
+			LoggingInterceptor(log),
 		),
 	)
 

@@ -4,8 +4,12 @@ import (
 	"cms-server/domain/entity"
 	"cms-server/domain/repository"
 	"cms-server/domain/service/cache"
-	serviceError "cms-server/domain/service/error"
+	se "cms-server/domain/service/error"
 	serviceJwt "cms-server/domain/service/jwt"
+)
+
+var (
+	ErrNotFoundSession = se.NewErr("Không tìm thấy phiên làm việc")
 )
 
 type LogoutUsecase interface {
@@ -34,7 +38,7 @@ func NewLogoutUsecase(
 func (l *logoutUsecaseImpl) VerifyToken(token string) error {
 	_, err := l.sessionRepo.GetSessionAliveByToken(entity.SessionTypeAuth, token)
 	if err != nil {
-		return serviceError.ErrNotFoundSession
+		return ErrNotFoundSession
 	}
 	_, err = l.jwt.VerifyAuthToken(token)
 	if err != nil {

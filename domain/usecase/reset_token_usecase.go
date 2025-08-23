@@ -5,7 +5,6 @@ import (
 	"cms-server/domain/repository"
 	"cms-server/domain/service/argon"
 	"cms-server/domain/service/cache"
-	serviceError "cms-server/domain/service/error"
 	serviceJwt "cms-server/domain/service/jwt"
 )
 
@@ -41,7 +40,7 @@ func NewResetPasswordTokenUsecase(
 func (uc *ResetPasswordByTokenUsecaseImpl) VerifySession(token string) (string, error) {
 	if _, err := uc.cache.Get(token); err != nil {
 		if isExist := uc.sessionRepo.TokenExists(token); !isExist {
-			return "", serviceError.NewErrorApp("Phiên làm việc không hợp lệ hoặc đã hết hạn")
+			return "", ErrNotFoundSession
 		}
 	}
 	go func() {
@@ -59,16 +58,16 @@ func (uc *ResetPasswordByTokenUsecaseImpl) VerifySession(token string) (string, 
 func (uc *ResetPasswordByTokenUsecaseImpl) ResetPass(IdUser, Password, ConfirmPassword string) error {
 	user, err := uc.userRepo.GetUserByID(IdUser)
 	if err != nil {
-		return serviceError.NewErrorApp("Không tìm thấy người dùng")
+		return ErrNotFoundUser
 	}
 
 	ConfirmPassword, err = uc.argon.HashPassword(ConfirmPassword)
 	if err != nil {
-		return serviceError.NewErrorApp("Không thể mã hóa mật khẩu")
+		return ErrHashPassword
 	}
 
 	if _, err = uc.userRepo.UpdateUser(user.ID, entity.User{Password: ConfirmPassword}); err != nil {
-		return serviceError.NewErrorApp("Không thể cập nhật mật khẩu")
+		return ErrUpdatePassword
 	}
 	return nil
 }
