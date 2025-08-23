@@ -26,6 +26,18 @@ type dbCache struct {
 	Network     string
 }
 
+type queue struct {
+	Addr        string
+	DB          int
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout int
+	Network     string
+	Concurrency int
+	Queues      map[string]int
+}
+
 type Env struct {
 	MODE_ENV string
 
@@ -41,6 +53,8 @@ type Env struct {
 	DB_CACHE *dbCache
 
 	SECRET_OTP string
+
+	QUEUE *queue
 
 	JWT_SECRET *jwtSecret
 

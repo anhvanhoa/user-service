@@ -14,6 +14,7 @@ type Application struct {
 	DB    *pg.DB
 	Log   loggerI.Log
 	Cache cache.RedisConfigImpl
+	Queue *queueClient
 }
 
 func App() *Application {
@@ -34,10 +35,12 @@ func App() *Application {
 		env.DB_CACHE.IdleTimeout,
 	)
 	cache := NewRedis(configRedis)
+	queue := NewQueueClient(&env, log)
 	return &Application{
 		Env:   &env,
 		DB:    db,
 		Log:   log,
 		Cache: cache,
+		Queue: queue,
 	}
 }

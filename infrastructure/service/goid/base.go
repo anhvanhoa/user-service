@@ -1,6 +1,9 @@
 package goidS
 
-import gonanoid "github.com/matoous/go-nanoid/v2"
+import (
+	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
+)
 
 type GoId struct {
 	alphabet string
@@ -27,4 +30,8 @@ func (g *GoId) SetAlphabet(alphabet string) {
 }
 func (g *GoId) SetSize(size int) {
 	g.size = size
+}
+
+func (g *GoId) NewUUID() string {
+	return uuid.New().String()
 }
