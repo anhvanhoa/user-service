@@ -1,9 +1,9 @@
 package bootstrap
 
 import (
-	"cms-server/constants"
-	loggerI "cms-server/domain/service/logger"
-	queueS "cms-server/domain/service/queue"
+	"auth-service/constants"
+	loggerI "auth-service/domain/service/logger"
+	queueS "auth-service/domain/service/queue"
 	"encoding/json"
 	"time"
 

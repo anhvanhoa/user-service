@@ -1,6 +1,6 @@
 package queue
 
-import "cms-server/constants"
+import "auth-service/constants"
 
 type Payload struct {
 	Provider string
