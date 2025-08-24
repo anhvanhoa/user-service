@@ -1,7 +1,7 @@
 package repo
 
 import (
-	"cms-server/domain/repository"
+	"auth-service/domain/repository"
 	"context"
 	"errors"
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cms-server/bootstrap"
-	"cms-server/infrastructure/api/router"
-	grpcservice "cms-server/infrastructure/grpc_service"
+	"auth-service/bootstrap"
+	"auth-service/infrastructure/api/router"
+	grpcservice "auth-service/infrastructure/grpc_service"
 	"context"
 	"time"
 

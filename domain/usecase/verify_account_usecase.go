@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"cms-server/domain/entity"
-	"cms-server/domain/repository"
-	"cms-server/domain/service/cache"
-	serviceJwt "cms-server/domain/service/jwt"
-	pkgjwt "cms-server/infrastructure/service/jwt"
+	"auth-service/domain/entity"
+	"auth-service/domain/repository"
+	"auth-service/domain/service/cache"
+	serviceJwt "auth-service/domain/service/jwt"
+	pkgjwt "auth-service/infrastructure/service/jwt"
 	"time"
 )
 

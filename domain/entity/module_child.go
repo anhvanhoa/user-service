@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"cms-server/domain/common"
+	"auth-service/domain/common"
 	"time"
 )
 

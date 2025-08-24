@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"cms-server/constants"
-	"cms-server/domain/usecase"
-	pkgres "cms-server/infrastructure/service/response"
+	"auth-service/constants"
+	"auth-service/domain/usecase"
+	pkgres "auth-service/infrastructure/service/response"
 	"time"
 
 	"github.com/go-pg/pg/v10"

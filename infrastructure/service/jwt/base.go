@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	serviceJwt "cms-server/domain/service/jwt"
+	serviceJwt "auth-service/domain/service/jwt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

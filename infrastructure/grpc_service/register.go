@@ -1,18 +1,18 @@
 package grpcservice
 
 import (
-	"cms-server/domain/usecase"
-	proto "cms-server/proto/gen/auth/v1"
+	"auth-service/domain/usecase"
 	"context"
 	"regexp"
 	"time"
 
+	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error) {
+func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequest) (*proto_auth.RegisterResponse, error) {
 	// Business logic validation: check email format
 	if !isValidEmail(req.GetEmail()) {
 		return nil, status.Errorf(codes.InvalidArgument, "email không đúng định dạng")
@@ -25,23 +25,23 @@ func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) 
 
 	// Business logic validation: check password strength
 	if err := validatePasswordStrength(req.GetPassword()); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	// Business logic validation: check password match
 	if err := validatePasswordMatch(req.GetPassword(), req.GetConfirmPassword()); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	// Business logic validation: check verification code format
 	if !isValidVerificationCode(req.GetCode()) {
-		return nil, status.Errorf(codes.InvalidArgument, "mã xác thực phải là 6 chữ số")
+		return nil, status.Error(codes.InvalidArgument, "mã xác thực phải là 6 chữ số")
 	}
 
 	// Check if user already exists
 	existingUser, err := a.registerUc.CheckUserExist(req.GetEmail())
 	if err == nil && existingUser.ID != "" {
-		return nil, status.Errorf(codes.AlreadyExists, "Email đã được sử dụng")
+		return nil, status.Error(codes.AlreadyExists, "Email đã được sử dụng")
 	}
 
 	// Create register request
@@ -54,14 +54,13 @@ func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) 
 	}
 
 	// Register user
-	exp := time.Now().Add(15 * time.Minute) // Registration token expires in 15 minutes
+	exp := time.Now().Add(15 * time.Minute)
 	result, err := a.registerUc.Register(registerReq, req.GetOs(), exp)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// Convert user to UserInfo
-	userInfo := &proto.UserInfo{
+	userInfo := &proto_auth.UserInfo{
 		Id:       result.UserInfor.ID,
 		Email:    result.UserInfor.Email,
 		Phone:    result.UserInfor.Phone,
@@ -75,14 +74,13 @@ func (a *authService) Register(ctx context.Context, req *proto.RegisterRequest) 
 		userInfo.Birthday = timestamppb.New(*result.UserInfor.Birthday)
 	}
 
-	return &proto.RegisterResponse{
+	return &proto_auth.RegisterResponse{
 		User:    userInfo,
 		Token:   result.Token,
 		Message: "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
 	}, nil
 }
 
-// isValidVerificationCode validates verification code format
 func isValidVerificationCode(code string) bool {
 	codeRegex := regexp.MustCompile(`^[0-9]{6}$`)
 	return codeRegex.MatchString(code)

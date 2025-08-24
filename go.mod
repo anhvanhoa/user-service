@@ -1,6 +1,6 @@
-module cms-server
+module auth-service
 
-go 1.23.0
+go 1.24.6
 
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.8-20250717185734-6c6e0d3c608e.1
@@ -23,6 +23,7 @@ require (
 
 require (
 	cel.dev/expr v0.23.1 // indirect
+	github.com/anhvanhoa/sf-proto v1.1.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/google/cel-go v0.25.0 // indirect

@@ -1,6 +1,6 @@
 package handler
 
-import "cms-server/domain/usecase"
+import "auth-service/domain/usecase"
 
 type resetPasswordByTokenReq struct {
 	Token           string `validate:"required"`

@@ -1,19 +1,20 @@
 package grpcservice
 
 import (
-	"cms-server/bootstrap"
-	"cms-server/domain/usecase"
-	"cms-server/infrastructure/repo"
-	argonS "cms-server/infrastructure/service/argon"
-	goidS "cms-server/infrastructure/service/goid"
-	"cms-server/infrastructure/service/jwt"
-	proto "cms-server/proto/gen/auth/v1"
+	"auth-service/bootstrap"
+	"auth-service/domain/usecase"
+	"auth-service/infrastructure/repo"
+	argonS "auth-service/infrastructure/service/argon"
+	goidS "auth-service/infrastructure/service/goid"
+	"auth-service/infrastructure/service/jwt"
+
+	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 
 	"github.com/go-pg/pg/v10"
 )
 
 type authService struct {
-	proto.UnimplementedAuthServiceServer
+	proto_auth.UnimplementedAuthServiceServer
 	checkTokenUc     usecase.CheckTokenUsecase
 	loginUc          usecase.LoginUsecase
 	registerUc       usecase.RegisterUsecase
@@ -26,7 +27,7 @@ type authService struct {
 	checkCodeUc      usecase.CheckCodeUsecase
 }
 
-func NewAuthService(db *pg.DB, env *bootstrap.Env) proto.AuthServiceServer {
+func NewAuthService(db *pg.DB, env *bootstrap.Env) proto_auth.AuthServiceServer {
 	// Initialize repositories
 	userRepo := repo.NewUserRepository(db)
 	sessionRepo := repo.NewSessionRepository(db)

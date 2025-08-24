@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"cms-server/domain/repository"
-	serviceError "cms-server/domain/service/error"
+	"auth-service/domain/repository"
+	serviceError "auth-service/domain/service/error"
 )
 
 type CheckCodeUsecase interface {

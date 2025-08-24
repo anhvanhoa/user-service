@@ -1,9 +1,9 @@
 package router
 
 import (
-	"cms-server/bootstrap"
-	"cms-server/domain/service/cache"
-	pkglog "cms-server/infrastructure/service/logger"
+	"auth-service/bootstrap"
+	"auth-service/domain/service/cache"
+	pkglog "auth-service/infrastructure/service/logger"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/gofiber/fiber/v2"

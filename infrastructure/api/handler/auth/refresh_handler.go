@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"cms-server/constants"
-	pkgres "cms-server/infrastructure/service/response"
+	"auth-service/constants"
+	pkgres "auth-service/infrastructure/service/response"
 	"time"
 
 	"github.com/gofiber/fiber/v2"

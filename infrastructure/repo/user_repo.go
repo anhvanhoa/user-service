@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"cms-server/domain/entity"
-	"cms-server/domain/repository"
+	"auth-service/domain/entity"
+	"auth-service/domain/repository"
 	"context"
 	"fmt"
 	"reflect"

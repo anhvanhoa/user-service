@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"cms-server/constants"
-	serviceError "cms-server/domain/service/error"
-	pkgres "cms-server/infrastructure/service/response"
+	"auth-service/constants"
+	serviceError "auth-service/domain/service/error"
+	pkgres "auth-service/infrastructure/service/response"
 	"errors"
 
 	"github.com/gofiber/fiber/v2"

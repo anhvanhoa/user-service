@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"cms-server/bootstrap"
-	"cms-server/domain/usecase"
-	pkglog "cms-server/infrastructure/service/logger"
+	"auth-service/bootstrap"
+	"auth-service/domain/usecase"
+	pkglog "auth-service/infrastructure/service/logger"
 
 	"github.com/gofiber/fiber/v2"
 )

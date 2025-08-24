@@ -1,17 +1,17 @@
 package grpcservice
 
 import (
-	proto "cms-server/proto/gen/auth/v1"
 	"context"
 	"regexp"
 	"time"
 
+	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*proto.LoginResponse, error) {
+func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (*proto_auth.LoginResponse, error) {
 	// Business logic validation: check if email_or_phone is valid format
 	identifier := req.GetEmailOrPhone()
 	if !isValidEmail(identifier) && !isValidPhone(identifier) {
@@ -20,7 +20,7 @@ func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*prot
 
 	// Business logic validation: check password strength
 	if err := validatePasswordStrength(req.GetPassword()); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	// Get user by email or phone
@@ -48,7 +48,7 @@ func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*prot
 	}
 
 	// Convert user to UserInfo
-	userInfo := &proto.UserInfo{
+	userInfo := &proto_auth.UserInfo{
 		Id:       user.ID,
 		Email:    user.Email,
 		Phone:    user.Phone,
@@ -62,7 +62,7 @@ func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*prot
 		userInfo.Birthday = timestamppb.New(*user.Birthday)
 	}
 
-	return &proto.LoginResponse{
+	return &proto_auth.LoginResponse{
 		User:         userInfo,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -70,9 +70,7 @@ func (a *authService) Login(ctx context.Context, req *proto.LoginRequest) (*prot
 	}, nil
 }
 
-// isValidPhone validates phone number format (Vietnamese format)
 func isValidPhone(phone string) bool {
-	// Vietnamese phone number regex
 	phoneRegex := regexp.MustCompile(`^(0|\+84)(3[2-9]|5[689]|7[06-9]|8[1-689]|9[0-46-9])[0-9]{7}$`)
 	return phoneRegex.MatchString(phone)
 }

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"cms-server/domain/entity"
+	"auth-service/domain/entity"
 	"context"
 )
 

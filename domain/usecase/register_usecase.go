@@ -1,13 +1,13 @@
 package usecase
 
 import (
-	"cms-server/constants"
-	"cms-server/domain/entity"
-	"cms-server/domain/repository"
-	"cms-server/domain/service/argon"
-	"cms-server/domain/service/cache"
-	"cms-server/domain/service/goid"
-	serviceJwt "cms-server/domain/service/jwt"
+	"auth-service/constants"
+	"auth-service/domain/entity"
+	"auth-service/domain/repository"
+	"auth-service/domain/service/argon"
+	"auth-service/domain/service/cache"
+	"auth-service/domain/service/goid"
+	serviceJwt "auth-service/domain/service/jwt"
 	"context"
 	"math/rand"
 	"time"

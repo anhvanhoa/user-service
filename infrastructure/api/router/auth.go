@@ -1,12 +1,12 @@
 package router
 
 import (
-	"cms-server/domain/usecase"
-	handler "cms-server/infrastructure/api/handler/auth"
-	"cms-server/infrastructure/repo"
-	argonS "cms-server/infrastructure/service/argon"
-	goidS "cms-server/infrastructure/service/goid"
-	pkgjwt "cms-server/infrastructure/service/jwt"
+	"auth-service/domain/usecase"
+	handler "auth-service/infrastructure/api/handler/auth"
+	"auth-service/infrastructure/repo"
+	argonS "auth-service/infrastructure/service/argon"
+	goidS "auth-service/infrastructure/service/goid"
+	pkgjwt "auth-service/infrastructure/service/jwt"
 )
 
 func (r *Router) initAuthRouter() {

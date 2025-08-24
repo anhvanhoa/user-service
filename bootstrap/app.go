@@ -1,8 +1,8 @@
 package bootstrap
 
 import (
-	"cms-server/domain/service/cache"
-	pkglog "cms-server/infrastructure/service/logger"
+	"auth-service/domain/service/cache"
+	pkglog "auth-service/infrastructure/service/logger"
 
 	"github.com/go-pg/pg/v10"
 	valid "github.com/go-playground/validator/v10"

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pkgjwt "cms-server/infrastructure/service/jwt"
-	pkgres "cms-server/infrastructure/service/response"
+	pkgjwt "auth-service/infrastructure/service/jwt"
+	pkgres "auth-service/infrastructure/service/response"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/gofiber/fiber/v2"

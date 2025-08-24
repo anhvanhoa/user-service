@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pkgres "cms-server/infrastructure/service/response"
+	pkgres "auth-service/infrastructure/service/response"
 
 	"github.com/gofiber/fiber/v2"
 )
