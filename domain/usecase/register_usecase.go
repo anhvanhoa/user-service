@@ -106,7 +106,7 @@ func (uc *registerUsecaseImpl) Register(user RegisterReq, os string, exp time.Ti
 func (uc *registerUsecaseImpl) createOrUpdateUser(user RegisterReq, ctx context.Context) (entity.UserInfor, error) {
 	var userInfo entity.UserInfor
 	var err error
-	id := uc.goid.GenWithLength(10)
+	id := uc.goid.NewUUID()
 	newUser := entity.User{
 		ID:         id,
 		Email:      user.Email,

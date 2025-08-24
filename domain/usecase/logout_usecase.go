@@ -4,8 +4,12 @@ import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"auth-service/domain/service/cache"
-	serviceError "auth-service/domain/service/error"
+	se "auth-service/domain/service/error"
 	serviceJwt "auth-service/domain/service/jwt"
+)
+
+var (
+	ErrNotFoundSession = se.NewErr("Không tìm thấy phiên làm việc")
 )
 
 type LogoutUsecase interface {
@@ -34,7 +38,7 @@ func NewLogoutUsecase(
 func (l *logoutUsecaseImpl) VerifyToken(token string) error {
 	_, err := l.sessionRepo.GetSessionAliveByToken(entity.SessionTypeAuth, token)
 	if err != nil {
-		return serviceError.ErrNotFoundSession
+		return ErrNotFoundSession
 	}
 	_, err = l.jwt.VerifyAuthToken(token)
 	if err != nil {

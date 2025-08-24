@@ -2,27 +2,27 @@ package bootstrap
 
 import (
 	"auth-service/domain/service/cache"
-	pkglog "auth-service/infrastructure/service/logger"
+	loggerI "auth-service/domain/service/logger"
+	"auth-service/infrastructure/service/logger"
 
 	"github.com/go-pg/pg/v10"
-	valid "github.com/go-playground/validator/v10"
 	"go.uber.org/zap/zapcore"
 )
 
 type Application struct {
 	Env   *Env
 	DB    *pg.DB
-	Log   pkglog.Logger
+	Log   loggerI.Log
 	Cache cache.RedisConfigImpl
-	Valid IValidator
+	Queue *queueClient
 }
 
 func App() *Application {
 	env := Env{}
 	NewEnv(&env)
 
-	logConfig := pkglog.NewConfig()
-	log := pkglog.InitLogger(logConfig, zapcore.DebugLevel, env.IsProduction())
+	logConfig := logger.NewConfig()
+	log := logger.InitLogger(logConfig, zapcore.DebugLevel, env.IsProduction())
 
 	db := NewPostgresDB(&env, log)
 	configRedis := NewRedisConfig(
@@ -35,12 +35,12 @@ func App() *Application {
 		env.DB_CACHE.IdleTimeout,
 	)
 	cache := NewRedis(configRedis)
-	valid := RegisterCustomValidations(valid.New())
+	queue := NewQueueClient(&env, log)
 	return &Application{
 		Env:   &env,
 		DB:    db,
 		Log:   log,
 		Cache: cache,
-		Valid: valid,
+		Queue: queue,
 	}
 }
