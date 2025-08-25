@@ -18,12 +18,13 @@ type queueClient struct {
 }
 
 func NewQueueClient(env *Env, log loggerI.Log) *queueClient {
-	client := asynq.NewClient(asynq.RedisClientOpt{
+	opt := asynq.RedisClientOpt{
 		Addr:     env.QUEUE.Addr,
 		DB:       env.QUEUE.DB,
 		Password: env.QUEUE.Password,
 		Network:  env.QUEUE.Network,
-	})
+	}
+	client := asynq.NewClient(opt)
 
 	if client.Ping() != nil {
 		log.Fatal("Failed to connect to the queue server: " + client.Ping().Error())

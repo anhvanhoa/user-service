@@ -5,8 +5,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
+	"google.golang.org/grpc/keepalive"
 )
 
 type jwtSecret struct {
@@ -38,6 +40,13 @@ type queue struct {
 	Queues      map[string]int
 }
 
+type GrpcClient struct {
+	ServerAddress string
+	Timeout       time.Duration
+	MaxRetries    int
+	KeepAlive     *keepalive.ClientParameters
+}
+
 type Env struct {
 	MODE_ENV string
 
@@ -59,6 +68,8 @@ type Env struct {
 	JWT_SECRET *jwtSecret
 
 	FRONTEND_URL string
+
+	GRPC_CLIENTS map[string]*GrpcClient
 }
 
 func NewEnv(env any) {

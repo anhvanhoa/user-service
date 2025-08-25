@@ -17,6 +17,7 @@ import (
 type GRPCServer struct {
 	server *grpc.Server
 	port   string
+	log    loggerI.Log
 }
 
 func NewGRPCServer(port string, authService proto_auth.AuthServiceServer, log loggerI.Log) *GRPCServer {
@@ -38,6 +39,7 @@ func NewGRPCServer(port string, authService proto_auth.AuthServiceServer, log lo
 	return &GRPCServer{
 		server: server,
 		port:   port,
+		log:    log,
 	}
 }
 
@@ -47,17 +49,17 @@ func (s *GRPCServer) Start(ctx context.Context) error {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
 
-	fmt.Printf("gRPC server starting on port %s\n", s.port)
+	s.log.Info(fmt.Sprintf("gRPC server starting on port %s", s.port))
 
 	go func() {
 		if err := s.server.Serve(lis); err != nil {
-			fmt.Printf("failed to serve: %v", err)
+			s.log.Error(fmt.Sprintf("failed to serve: %v", err))
 		}
 	}()
 
 	<-ctx.Done()
 
-	fmt.Println("Shutting down gRPC server...")
+	s.log.Info("Shutting down gRPC server...")
 	s.server.GracefulStop()
 
 	return nil

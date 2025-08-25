@@ -34,7 +34,7 @@ type RegisterUsecase interface {
 	GengerateCode(length int8) string
 	createOrUpdateUser(user RegisterReq, ctx context.Context) (entity.UserInfor, error)
 	saveToken(token string, id string, os string) error
-	SendMail(user entity.UserInfor, linkVerify string) error
+	SendMail(payload queue.Payload) (string, error)
 }
 
 type registerUsecaseImpl struct {
@@ -45,7 +45,7 @@ type registerUsecaseImpl struct {
 	goid        goid.GoId
 	argon       argon.Argon
 	cahe        cache.RedisConfigImpl
-	queue       queue.QueueClient
+	qc          queue.QueueClient
 }
 
 func NewRegisterUsecase(
@@ -66,7 +66,7 @@ func NewRegisterUsecase(
 		goid:        goid,
 		argon:       argon,
 		cahe:        cache,
-		queue:       queue,
+		qc:          queue,
 	}
 }
 
@@ -160,6 +160,10 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 	return nil
 }
 
-func (uc *registerUsecaseImpl) SendMail(user entity.UserInfor, linkVerify string) error {
-	return nil
+func (uc *registerUsecaseImpl) SendMail(payload queue.Payload) (string, error) {
+	Id, err := uc.qc.EnqueueMail(payload)
+	if err != nil {
+		return "", err
+	}
+	return Id, nil
 }

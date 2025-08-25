@@ -20,7 +20,6 @@ type Application struct {
 func App() *Application {
 	env := Env{}
 	NewEnv(&env)
-
 	logConfig := logger.NewConfig()
 	log := logger.InitLogger(logConfig, zapcore.DebugLevel, env.IsProduction())
 
