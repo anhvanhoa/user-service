@@ -8,6 +8,7 @@ import (
 	"auth-service/domain/service/cache"
 	"auth-service/domain/service/goid"
 	serviceJwt "auth-service/domain/service/jwt"
+	"auth-service/domain/service/queue"
 	"context"
 	"math/rand"
 	"time"
@@ -44,6 +45,7 @@ type registerUsecaseImpl struct {
 	goid        goid.GoId
 	argon       argon.Argon
 	cahe        cache.RedisConfigImpl
+	queue       queue.QueueClient
 }
 
 func NewRegisterUsecase(
@@ -54,6 +56,7 @@ func NewRegisterUsecase(
 	goid goid.GoId,
 	argon argon.Argon,
 	cache cache.RedisConfigImpl,
+	queue queue.QueueClient,
 ) RegisterUsecase {
 	return &registerUsecaseImpl{
 		userRepo:    userRepo,
@@ -63,6 +66,7 @@ func NewRegisterUsecase(
 		goid:        goid,
 		argon:       argon,
 		cahe:        cache,
+		queue:       queue,
 	}
 }
 

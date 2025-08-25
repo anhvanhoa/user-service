@@ -15,7 +15,7 @@ func StartGRPCServer() {
 	env := app.Env
 	log := app.Log
 	db := app.DB
-	authService := grpcservice.NewAuthService(db, env)
+	authService := grpcservice.NewAuthService(db, env, log)
 	grpcSrv := grpcservice.NewGRPCServer(env.PORT_GRPC, authService, log)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

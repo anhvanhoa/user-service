@@ -2,6 +2,7 @@ package grpcservice
 
 import (
 	"auth-service/bootstrap"
+	loggerI "auth-service/domain/service/logger"
 	"auth-service/domain/usecase"
 	"auth-service/infrastructure/repo"
 	argonS "auth-service/infrastructure/service/argon"
@@ -27,7 +28,7 @@ type authService struct {
 	checkCodeUc      usecase.CheckCodeUsecase
 }
 
-func NewAuthService(db *pg.DB, env *bootstrap.Env) proto_auth.AuthServiceServer {
+func NewAuthService(db *pg.DB, env *bootstrap.Env, log loggerI.Log) proto_auth.AuthServiceServer {
 	// Initialize repositories
 	userRepo := repo.NewUserRepository(db)
 	sessionRepo := repo.NewSessionRepository(db)
@@ -53,11 +54,12 @@ func NewAuthService(db *pg.DB, env *bootstrap.Env) proto_auth.AuthServiceServer 
 	jwtRefreshService := jwt.NewJWT(env.JWT_SECRET.Refresh)
 	jwtRegisterService := jwt.NewJWT(env.JWT_SECRET.Verify)
 	jwtForgotService := jwt.NewJWT(env.JWT_SECRET.Forgot)
+	queueService := bootstrap.NewQueueClient(env, log)
 
 	return &authService{
 		checkTokenUc:     usecase.NewCheckTokenUsecase(sessionRepo),
 		loginUc:          usecase.NewLoginUsecase(userRepo, sessionRepo, jwtAccessService, jwtRefreshService, argonService, cacheService),
-		registerUc:       usecase.NewRegisterUsecase(userRepo, sessionRepo, jwtRegisterService, tx, goidService, argonService, cacheService),
+		registerUc:       usecase.NewRegisterUsecase(userRepo, sessionRepo, jwtRegisterService, tx, goidService, argonService, cacheService, queueService),
 		refreshUc:        usecase.NewRefreshUsecase(sessionRepo, jwtAccessService, jwtRefreshService, cacheService),
 		logoutUc:         usecase.NewLogoutUsecase(sessionRepo, jwtAccessService, cacheService),
 		verifyAccountUc:  usecase.NewVerifyAccountUsecase(userRepo, sessionRepo, jwtRegisterService, cacheService),
