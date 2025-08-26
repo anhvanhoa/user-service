@@ -30,7 +30,6 @@ func NewClientFactory(log loggerI.Log, config ...*Config) *ClientFactory {
 func (cf *ClientFactory) CreateClient(config *Config) (*Client, error) {
 	cf.mutex.Lock()
 	defer cf.mutex.Unlock()
-
 	if client, exists := cf.clients[config.Name]; exists {
 		if client.IsConnected() {
 			return client, nil
@@ -40,13 +39,10 @@ func (cf *ClientFactory) CreateClient(config *Config) (*Client, error) {
 
 	client, err := NewClient(config, cf.log)
 	if err != nil {
+		cf.log.Error(fmt.Sprintf("Failed to create client '%s': %v", config.Name, err))
 		return nil, fmt.Errorf("không thể tạo client '%s': %w", config.Name, err)
 	}
-	if client.IsConnected() {
-		cf.log.Info(fmt.Sprintf("Kết nối thành công: %s", client.config.Name), zap.String("host", client.conn.Target()))
-	} else {
-		cf.log.Error(fmt.Sprintf("Kết nối thất bại: %s", client.conn.Target()))
-	}
+	cf.log.Info(fmt.Sprintf("Client created: %s", client.config.Name), zap.String("target", client.conn.Target()))
 	cf.clients[config.Name] = client
 	return client, nil
 }

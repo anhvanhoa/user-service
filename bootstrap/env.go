@@ -56,7 +56,7 @@ type Env struct {
 	PORT_APP string
 	HOST_APP string
 
-	PORT_GRPC string
+	PORT_GRPC int
 	HOST_GRPC string
 
 	DB_CACHE *dbCache

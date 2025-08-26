@@ -67,6 +67,9 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) IsConnected() bool {
-	c.log.Info(fmt.Sprintf("Trạng thái kết nối: %s", c.conn.GetState().String()))
-	return c.conn != nil
+	if c.conn == nil {
+		return false
+	}
+	state := c.conn.GetState()
+	return state.String() != "SHUTDOWN" && state.String() != "TRANSIENT_FAILURE"
 }
