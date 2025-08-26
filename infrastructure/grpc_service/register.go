@@ -9,6 +9,7 @@ import (
 
 	proto_mail_history "github.com/anhvanhoa/sf-proto/gen/mail_history/v1"
 	proto_mail_template "github.com/anhvanhoa/sf-proto/gen/mail_tmpl/v1"
+	proto_status_history "github.com/anhvanhoa/sf-proto/gen/status_history/v1"
 
 	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 	"google.golang.org/grpc/codes"
@@ -91,6 +92,13 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		Tos:           []string{result.UserInfor.Email},
 		Data:          protoData,
 		EmailProvider: tmpl.MailTmpl.ProviderEmail,
+	})
+
+	a.mailService.Shc.CreateStatusHistory(ctx, &proto_status_history.CreateStatusHistoryRequest{
+		MailHistoryId: Id,
+		Status:        "pending",
+		Message:       "Send mail to " + result.UserInfor.Email,
+		CreatedAt:     time.Now().Format(time.RFC3339),
 	})
 
 	userInfo := &proto_auth.UserInfo{
