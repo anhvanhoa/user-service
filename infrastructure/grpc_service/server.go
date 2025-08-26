@@ -42,7 +42,7 @@ func NewGRPCServer(env *bootstrap.Env, authService proto_auth.AuthServiceServer,
 	grpc_health_v1.RegisterHealthServer(server, healthSrv)
 
 	healthSrv.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
-	healthSrv.SetServingStatus("auth-service", grpc_health_v1.HealthCheckResponse_SERVING)
+	healthSrv.SetServingStatus(env.NAME_SERVICE, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	if !env.IsProduction() {
 		log.Info("Reflection is enabled")

@@ -1,14 +1,13 @@
 package bootstrap
 
 import (
+	"auth-service/infrastructure/grpc_client"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/spf13/viper"
-	"google.golang.org/grpc/keepalive"
 )
 
 type jwtSecret struct {
@@ -40,24 +39,16 @@ type queue struct {
 	Queues      map[string]int
 }
 
-type GrpcClient struct {
-	ServerAddress string
-	Timeout       time.Duration
-	MaxRetries    int
-	KeepAlive     *keepalive.ClientParameters
-}
-
 type Env struct {
 	MODE_ENV string
 
 	URL_DB string
 
-	NAME_APP string
-	PORT_APP string
-	HOST_APP string
-
-	PORT_GRPC int
-	HOST_GRPC string
+	NAME_SERVICE   string
+	PORT_GRPC      int
+	HOST_GRPC      string
+	INTERVAL_CHECK string
+	TIMEOUT_CHECK  string
 
 	DB_CACHE *dbCache
 
@@ -69,7 +60,9 @@ type Env struct {
 
 	FRONTEND_URL string
 
-	GRPC_CLIENTS map[string]*GrpcClient
+	MAIL_SERVICE_ADDR string
+
+	GRPC_CLIENTS []*grpc_client.Config
 }
 
 func NewEnv(env any) {
