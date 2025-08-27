@@ -31,8 +31,8 @@ func NewGRPCServer(env *bootstrap.Env, authService proto_auth.AuthServiceServer,
 	}
 	server := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			protovalidate_middleware.UnaryServerInterceptor(validator),
 			LoggingInterceptor(log),
+			protovalidate_middleware.UnaryServerInterceptor(validator),
 		),
 	)
 

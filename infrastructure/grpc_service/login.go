@@ -12,42 +12,36 @@ import (
 )
 
 func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (*proto_auth.LoginResponse, error) {
-	// Business logic validation: check if email_or_phone is valid format
 	identifier := req.GetEmailOrPhone()
 	if !isValidEmail(identifier) && !isValidPhone(identifier) {
 		return nil, status.Errorf(codes.InvalidArgument, "email hoặc số điện thoại không đúng định dạng")
 	}
 
-	// Business logic validation: check password strength
 	if err := validatePasswordStrength(req.GetPassword()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	// Get user by email or phone
 	user, err := a.loginUc.GetUserByEmailOrPhone(req.GetEmailOrPhone())
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Không tìm thấy người dùng")
 	}
 
-	// Check password
 	if !a.loginUc.CheckHashPassword(req.GetPassword(), user.Password) {
 		return nil, status.Errorf(codes.InvalidArgument, "Mật khẩu không chính xác")
 	}
 
-	// Generate tokens
-	exp := time.Now().Add(15 * time.Minute) // Access token expires in 15 minutes
+	exp := time.Now().Add(15 * time.Minute)
 	accessToken, err := a.loginUc.GengerateAccessToken(user.ID, user.FullName, exp)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể tạo access token")
 	}
 
-	refreshExp := time.Now().Add(7 * 24 * time.Hour) // Refresh token expires in 7 days
+	refreshExp := time.Now().Add(7 * 24 * time.Hour)
 	refreshToken, err := a.loginUc.GengerateRefreshToken(user.ID, user.FullName, refreshExp, req.GetOs())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể tạo refresh token")
 	}
 
-	// Convert user to UserInfo
 	userInfo := &proto_auth.UserInfo{
 		Id:       user.ID,
 		Email:    user.Email,
