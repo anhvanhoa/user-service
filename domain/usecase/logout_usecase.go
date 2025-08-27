@@ -6,6 +6,7 @@ import (
 	"auth-service/domain/service/cache"
 	se "auth-service/domain/service/error"
 	serviceJwt "auth-service/domain/service/jwt"
+	"context"
 )
 
 var (
@@ -51,7 +52,7 @@ func (l *logoutUsecaseImpl) Logout(token string) error {
 	if err := l.cache.Delete(token); err != nil {
 		return err
 	}
-	if err := l.sessionRepo.DeleteSessionAuthByToken(token); err != nil {
+	if err := l.sessionRepo.DeleteSessionAuthByToken(context.Background(), token); err != nil {
 		return err
 	}
 	return nil

@@ -17,10 +17,6 @@ func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (
 		return nil, status.Errorf(codes.InvalidArgument, "email hoặc số điện thoại không đúng định dạng")
 	}
 
-	if err := validatePasswordStrength(req.GetPassword()); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
 	user, err := a.loginUc.GetUserByEmailOrPhone(req.GetEmailOrPhone())
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Không tìm thấy người dùng")

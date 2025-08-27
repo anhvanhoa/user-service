@@ -5,6 +5,7 @@ import (
 	"auth-service/domain/repository"
 	"auth-service/domain/service/cache"
 	serviceJwt "auth-service/domain/service/jwt"
+	"context"
 	"time"
 )
 
@@ -42,14 +43,14 @@ func (uc *refreshUsecaseImpl) GetSessionByToken(token string) (entity.Session, e
 	if err != nil {
 		return entity.Session{}, err
 	}
-	if err := uc.sessionRepo.DeleteSessionAuthByToken(token); err != nil {
+	if err := uc.sessionRepo.DeleteSessionAuthByToken(context.Background(), token); err != nil {
 		return entity.Session{}, err
 	}
 	return session, nil
 }
 
 func (uc *refreshUsecaseImpl) ClearSessionExpired() error {
-	if err := uc.sessionRepo.DeleteAllSessionsExpired(); err != nil {
+	if err := uc.sessionRepo.DeleteAllSessionsExpired(context.Background()); err != nil {
 		return err
 	}
 	return nil

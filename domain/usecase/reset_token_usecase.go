@@ -6,6 +6,7 @@ import (
 	"auth-service/domain/service/argon"
 	"auth-service/domain/service/cache"
 	serviceJwt "auth-service/domain/service/jwt"
+	"context"
 )
 
 type ResetPasswordByTokenUsecase interface {
@@ -44,7 +45,7 @@ func (uc *ResetPasswordByTokenUsecaseImpl) VerifySession(token string) (string, 
 		}
 	}
 	go func() {
-		uc.sessionRepo.DeleteSessionForgotByToken(token)
+		uc.sessionRepo.DeleteSessionForgotByToken(context.Background(), token)
 		uc.cache.Delete(token)
 	}()
 	claim, err := uc.jwt.VerifyForgotPasswordToken(token)

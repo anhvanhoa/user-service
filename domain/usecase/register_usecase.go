@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"auth-service/constants"
+	"auth-service/domain/common"
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"auth-service/domain/service/argon"
@@ -9,6 +10,7 @@ import (
 	"auth-service/domain/service/goid"
 	serviceJwt "auth-service/domain/service/jwt"
 	"auth-service/domain/service/queue"
+	"auth-service/domain/service/saga"
 	"context"
 	"math/rand"
 	"time"
@@ -31,10 +33,13 @@ type RegisterUsecase interface {
 	CheckUserExist(email string) (entity.User, error)
 	hashPassword(password string) (string, error)
 	Register(user RegisterReq, os string, exp time.Time) (ResRegister, error)
+	RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error
 	GengerateCode(length int8) string
 	createOrUpdateUser(user RegisterReq, ctx context.Context) (entity.UserInfor, error)
 	saveToken(token string, id string, os string) error
 	SendMail(payload queue.Payload) (string, error)
+	CompensateRegister(ctx context.Context, userId string) error
+	CompensateSendMail(ctx context.Context, taskID string) error
 }
 
 type registerUsecaseImpl struct {
@@ -73,6 +78,7 @@ func NewRegisterUsecase(
 func (uc *registerUsecaseImpl) CheckUserExist(email string) (entity.User, error) {
 	return uc.userRepo.GetUserByEmail(email)
 }
+
 func (uc *registerUsecaseImpl) GengerateCode(length int8) string {
 	const digits = "0123456789"
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -82,6 +88,7 @@ func (uc *registerUsecaseImpl) GengerateCode(length int8) string {
 	}
 	return string(result)
 }
+
 func (uc *registerUsecaseImpl) hashPassword(password string) (string, error) {
 	return uc.argon.HashPassword(password)
 }
@@ -93,7 +100,7 @@ func (uc *registerUsecaseImpl) Register(user RegisterReq, os string, exp time.Ti
 		if res.UserInfor, err = uc.createOrUpdateUser(user, ctx); err != nil {
 			return err
 		}
-		if err = uc.sessionRepo.DeleteSessionVerifyByUserID(res.UserInfor.ID); err != nil {
+		if err = uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, res.UserInfor.ID); err != nil {
 			return err
 		}
 		if res.Token, err = uc.jwt.GenRegisterToken(res.UserInfor.ID, user.Code, exp); err != nil {
@@ -166,4 +173,33 @@ func (uc *registerUsecaseImpl) SendMail(payload queue.Payload) (string, error) {
 		return "", err
 	}
 	return Id, nil
+}
+
+func (uc *registerUsecaseImpl) RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error {
+	err := uc.tx.RunSagaTransaction(sagaID, func(ctx context.Context, sagaTx *saga.SagaTransaction) error {
+		if err := execute(ctx, sagaTx); err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+func (uc *registerUsecaseImpl) compensateUserCreation(ctx context.Context, id string) error {
+	return uc.userRepo.DeleteByID(ctx, id)
+}
+
+func (uc *registerUsecaseImpl) compensateSessionCreation(ctx context.Context, userID string) error {
+	return uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, userID)
+}
+
+func (uc *registerUsecaseImpl) CompensateRegister(ctx context.Context, userID string) error {
+	if err := uc.compensateUserCreation(ctx, userID); err != nil {
+		return err
+	}
+	return uc.compensateSessionCreation(ctx, userID)
+}
+
+func (uc *registerUsecaseImpl) CompensateSendMail(ctx context.Context, taskID string) error {
+	return uc.qc.CancelTaskMail(taskID)
 }

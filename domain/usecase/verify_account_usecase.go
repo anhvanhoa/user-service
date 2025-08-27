@@ -6,6 +6,7 @@ import (
 	"auth-service/domain/service/cache"
 	serviceJwt "auth-service/domain/service/jwt"
 	pkgjwt "auth-service/infrastructure/service/jwt"
+	"context"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func (u *verifyAccountUsecaseImpl) VerifyRegister(t string) (*serviceJwt.VerifyC
 		}
 	} else {
 		go func() {
-			u.sessionRepo.DeleteSessionAuthByToken(t)
+			u.sessionRepo.DeleteSessionAuthByToken(context.Background(), t)
 			u.cache.Delete(t)
 		}()
 	}

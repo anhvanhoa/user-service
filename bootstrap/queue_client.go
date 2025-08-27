@@ -11,10 +11,11 @@ import (
 )
 
 type queueClient struct {
-	client  *asynq.Client
-	retry   int
-	timeout time.Duration
-	log     loggerI.Log
+	client    *asynq.Client
+	inspector *asynq.Inspector
+	retry     int
+	timeout   time.Duration
+	log       loggerI.Log
 }
 
 func NewQueueClient(env *Env, log loggerI.Log) *queueClient {
@@ -25,16 +26,17 @@ func NewQueueClient(env *Env, log loggerI.Log) *queueClient {
 		Network:  env.QUEUE.Network,
 	}
 	client := asynq.NewClient(opt)
-
+	inspector := asynq.NewInspector(opt)
 	if client.Ping() != nil {
 		log.Fatal("Failed to connect to the queue server: " + client.Ping().Error())
 	}
 
 	return &queueClient{
-		client:  client,
-		retry:   5,
-		timeout: 10 * time.Minute,
-		log:     log,
+		client:    client,
+		inspector: inspector,
+		retry:     5,
+		timeout:   10 * time.Minute,
+		log:       log,
 	}
 }
 
@@ -73,4 +75,8 @@ func (qc *queueClient) Close() {
 
 func (qc *queueClient) Ping() error {
 	return qc.client.Ping()
+}
+
+func (qc *queueClient) CancelTaskMail(taskID string) error {
+	return qc.inspector.DeleteTask(string(constants.QUEUE_MAIL), taskID)
 }

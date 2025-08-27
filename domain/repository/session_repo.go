@@ -11,14 +11,14 @@ type SessionRepository interface {
 	GetSessionAliveByTokenAndIdUser(typeSession entity.SessionType, token, idUser string) (entity.Session, error)
 	GetSessionForgotAliveByTokenAndIdUser(token, idUser string) (entity.Session, error)
 	TokenExists(token string) bool
-	DeleteSessionByTypeAndUserID(sessionType entity.SessionType, userID string) error
-	DeleteSessionByTypeAndToken(sessionType entity.SessionType, token string) error
-	DeleteSessionVerifyByUserID(userID string) error
-	DeleteSessionAuthByToken(token string) error
-	DeleteSessionVerifyByToken(token string) error
-	DeleteSessionForgotByToken(token string) error
-	DeleteAllSessionsExpired() error
-	DeleteAllSessionsForgot() error
-	DeleteSessionForgotByTokenAndIdUser(token, idUser string) error
+	DeleteSessionByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) error
+	DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error
+	DeleteSessionVerifyByUserID(ctx context.Context, userID string) error
+	DeleteSessionAuthByToken(ctx context.Context, token string) error
+	DeleteSessionVerifyByToken(ctx context.Context, token string) error
+	DeleteSessionForgotByToken(ctx context.Context, token string) error
+	DeleteAllSessionsExpired(ctx context.Context) error
+	DeleteAllSessionsForgot(ctx context.Context) error
+	DeleteSessionForgotByTokenAndIdUser(ctx context.Context, token, idUser string) error
 	Tx(ctx context.Context) SessionRepository
 }

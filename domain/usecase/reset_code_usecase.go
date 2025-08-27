@@ -7,6 +7,7 @@ import (
 	"auth-service/domain/service/cache"
 	se "auth-service/domain/service/error"
 	serviceJwt "auth-service/domain/service/jwt"
+	"context"
 )
 
 type ResetPasswordByCodeUsecase interface {
@@ -56,7 +57,7 @@ func (uc *ResetPasswordByCodeUsecaseImpl) VerifySession(code, email string) (str
 		}
 	}
 	go func() {
-		uc.sessionRepo.DeleteSessionForgotByTokenAndIdUser(code, user.ID)
+		uc.sessionRepo.DeleteSessionForgotByTokenAndIdUser(context.Background(), code, user.ID)
 		uc.cache.Delete(key)
 	}()
 	return user.ID, nil

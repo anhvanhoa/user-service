@@ -19,6 +19,8 @@ import (
 type authService struct {
 	proto_auth.UnimplementedAuthServiceServer
 	env              *bootstrap.Env
+	log              loggerI.Log
+	goId             *goidS.GoId
 	mailService      *grpc_client.MailService
 	checkTokenUc     usecase.CheckTokenUsecase
 	loginUc          usecase.LoginUsecase
@@ -41,7 +43,7 @@ func NewAuthService(
 ) proto_auth.AuthServiceServer {
 	userRepo := repo.NewUserRepository(db)
 	sessionRepo := repo.NewSessionRepository(db)
-	tx := repo.NewManagerTransaction(db)
+	tx := repo.NewManagerTransaction(db, log)
 	argonService := argonS.NewArgon()
 	configRedis := bootstrap.NewRedisConfig(
 		env.DB_CACHE.Addr,
@@ -60,7 +62,9 @@ func NewAuthService(
 	jwtForgotService := jwt.NewJWT(env.JWT_SECRET.Forgot)
 	return &authService{
 		env:          env,
+		log:          log,
 		mailService:  mailService,
+		goId:         goidService,
 		checkTokenUc: usecase.NewCheckTokenUsecase(sessionRepo),
 		loginUc: usecase.NewLoginUsecase(
 			userRepo,

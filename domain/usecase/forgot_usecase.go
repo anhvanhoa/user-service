@@ -7,6 +7,7 @@ import (
 	"auth-service/domain/service/cache"
 	se "auth-service/domain/service/error"
 	serviceJwt "auth-service/domain/service/jwt"
+	"context"
 	"math/rand"
 	"strconv"
 	"time"
@@ -84,7 +85,7 @@ func (uc *forgotPasswordUsecaseImpl) saveCodeOrToken(typeForgot ForgotPasswordTy
 }
 
 func (uc *forgotPasswordUsecaseImpl) SendEmailForgotPassword(user entity.UserInfor, code, link string) error {
-	go uc.sessionRepo.DeleteAllSessionsForgot()
+	go uc.sessionRepo.DeleteAllSessionsForgot(context.Background())
 	return nil
 }
 

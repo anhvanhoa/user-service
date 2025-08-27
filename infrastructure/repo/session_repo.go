@@ -65,12 +65,12 @@ func (sr *sessionRepositoryImpl) TokenExists(token string) bool {
 	return count > 0
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionVerifyByUserID(userID string) error {
-	return sr.DeleteSessionByTypeAndUserID(entity.SessionTypeVerify, userID)
+func (sr *sessionRepositoryImpl) DeleteSessionVerifyByUserID(ctx context.Context, userID string) error {
+	return sr.DeleteSessionByTypeAndUserID(ctx, entity.SessionTypeVerify, userID)
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndUserID(sessionType entity.SessionType, userID string) error {
-	_, err := sr.db.Model(&entity.Session{}).
+func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
 		Where("type = ? AND user_id = ?", sessionType, userID).
 		Delete()
 	if err != nil {
@@ -79,8 +79,8 @@ func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndUserID(sessionType entity
 	return nil
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndToken(sessionType entity.SessionType, token string) error {
-	_, err := sr.db.Model(&entity.Session{}).
+func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
 		Where("type = ? AND token = ?", sessionType, token).
 		Delete()
 	if err != nil {
@@ -89,20 +89,20 @@ func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndToken(sessionType entity.
 	return nil
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionAuthByToken(token string) error {
-	return sr.DeleteSessionByTypeAndToken(entity.SessionTypeAuth, token)
+func (sr *sessionRepositoryImpl) DeleteSessionAuthByToken(ctx context.Context, token string) error {
+	return sr.DeleteSessionByTypeAndToken(ctx, entity.SessionTypeAuth, token)
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionVerifyByToken(token string) error {
-	return sr.DeleteSessionByTypeAndToken(entity.SessionTypeVerify, token)
+func (sr *sessionRepositoryImpl) DeleteSessionVerifyByToken(ctx context.Context, token string) error {
+	return sr.DeleteSessionByTypeAndToken(ctx, entity.SessionTypeVerify, token)
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionForgotByToken(token string) error {
-	return sr.DeleteSessionByTypeAndToken(entity.SessionTypeForgot, token)
+func (sr *sessionRepositoryImpl) DeleteSessionForgotByToken(ctx context.Context, token string) error {
+	return sr.DeleteSessionByTypeAndToken(ctx, entity.SessionTypeForgot, token)
 }
 
-func (sr *sessionRepositoryImpl) DeleteAllSessionsExpired() error {
-	_, err := sr.db.Model(&entity.Session{}).
+func (sr *sessionRepositoryImpl) DeleteAllSessionsExpired(ctx context.Context) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
 		Where("expired_at < NOW()").
 		Delete()
 	if err != nil {
@@ -111,8 +111,8 @@ func (sr *sessionRepositoryImpl) DeleteAllSessionsExpired() error {
 	return nil
 }
 
-func (sr *sessionRepositoryImpl) DeleteSessionForgotByTokenAndIdUser(token, idUser string) error {
-	_, err := sr.db.Model(&entity.Session{}).
+func (sr *sessionRepositoryImpl) DeleteSessionForgotByTokenAndIdUser(ctx context.Context, token, idUser string) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
 		Where("type = ? AND token = ? AND user_id = ?", entity.SessionTypeForgot, token, idUser).
 		Delete()
 	if err != nil {
@@ -121,8 +121,8 @@ func (sr *sessionRepositoryImpl) DeleteSessionForgotByTokenAndIdUser(token, idUs
 	return nil
 }
 
-func (sr *sessionRepositoryImpl) DeleteAllSessionsForgot() error {
-	_, err := sr.db.Model(&entity.Session{}).
+func (sr *sessionRepositoryImpl) DeleteAllSessionsForgot(ctx context.Context) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
 		Where("type = ?", entity.SessionTypeForgot).
 		Delete()
 	if err != nil {

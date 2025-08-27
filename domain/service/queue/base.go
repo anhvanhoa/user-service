@@ -12,4 +12,5 @@ type Payload struct {
 type QueueClient interface {
 	EnqueueMail(payload Payload) (string, error)
 	EnqueueAnyTask(taskType constants.QueueType, payload Payload) (string, error)
+	CancelTaskMail(taskID string) error
 }

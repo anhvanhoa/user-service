@@ -94,6 +94,12 @@ func (ur *userRepository) UpdateUserByEmail(email string, user entity.User) (boo
 	return r.RowsAffected() != -1, err
 }
 
+func (ur *userRepository) DeleteByID(ctx context.Context, id string) error {
+	var user entity.User
+	_, err := ur.db.ModelContext(ctx, &user).Where("id = ?", id).Delete()
+	return err
+}
+
 func (ur *userRepository) Tx(ctx context.Context) repository.UserRepository {
 	tx := getTx(ctx, ur.db)
 	return &userRepository{
