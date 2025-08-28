@@ -1,8 +1,9 @@
 package entity
 
 import (
-	"auth-service/domain/common"
 	"time"
+
+	"github.com/anhvanhoa/service-core/common"
 )
 
 type Role struct {

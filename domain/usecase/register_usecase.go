@@ -2,13 +2,13 @@ package usecase
 
 import (
 	"auth-service/constants"
-	"auth-service/domain/common"
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"context"
 	"math/rand"
 	"time"
 
+	"github.com/anhvanhoa/service-core/common"
 	"github.com/anhvanhoa/service-core/domain/cache"
 	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
 

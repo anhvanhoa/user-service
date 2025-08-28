@@ -3,7 +3,7 @@ module auth-service
 go 1.24.6
 
 require (
-	github.com/anhvanhoa/service-core v0.0.0-20250828091430-fd24519cea3d
+	github.com/anhvanhoa/service-core v0.0.0-20250828141429-c71a405779de
 	github.com/anhvanhoa/sf-proto v1.1.5
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
