@@ -1,8 +1,8 @@
 package sessionusecase
 
 import (
-	"auth-service/domain/repository"
 	"context"
+	"user-service/domain/repository"
 )
 
 type DeleteSessionExpiredUsecase interface {

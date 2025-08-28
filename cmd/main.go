@@ -1,10 +1,10 @@
 package main
 
 import (
-	"auth-service/bootstrap"
-	"auth-service/infrastructure/grpc_client"
-	grpcservice "auth-service/infrastructure/grpc_service"
 	"context"
+	"user-service/bootstrap"
+	"user-service/infrastructure/grpc_client"
+	grpcservice "user-service/infrastructure/grpc_service"
 
 	"github.com/anhvanhoa/service-core/domain/discovery"
 	gc "github.com/anhvanhoa/service-core/domain/grpc_client"

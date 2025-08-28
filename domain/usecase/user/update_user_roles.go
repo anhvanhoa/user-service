@@ -1,7 +1,7 @@
 package userusecase
 
 import (
-	"auth-service/domain/repository"
+	"user-service/domain/repository"
 )
 
 type UpdateUserRolesUsecase interface {

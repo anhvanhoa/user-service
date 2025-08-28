@@ -1,9 +1,9 @@
 package userusecase
 
 import (
-	"auth-service/domain/entity"
-	"auth-service/domain/repository"
 	"time"
+	"user-service/domain/entity"
+	"user-service/domain/repository"
 )
 
 type UpdateUserUsecase interface {

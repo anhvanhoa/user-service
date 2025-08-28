@@ -1,8 +1,8 @@
 package roleusecase
 
 import (
-	"auth-service/domain/repository"
 	"context"
+	"user-service/domain/repository"
 )
 
 type DeleteRoleUsecase interface {

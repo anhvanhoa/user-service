@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"auth-service/domain/entity"
 	"context"
+	"user-service/domain/entity"
 )
 
 type UserRoleRepository interface {

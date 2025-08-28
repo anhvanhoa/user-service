@@ -1,12 +1,12 @@
 package repo
 
 import (
-	"auth-service/domain/entity"
-	"auth-service/domain/repository"
 	"context"
 	"fmt"
 	"reflect"
 	"strings"
+	"user-service/domain/entity"
+	"user-service/domain/repository"
 
 	"github.com/go-pg/pg/v10"
 )

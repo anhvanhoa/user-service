@@ -1,8 +1,8 @@
 package roleusecase
 
 import (
-	"auth-service/domain/entity"
-	"auth-service/domain/repository"
+	"user-service/domain/entity"
+	"user-service/domain/repository"
 )
 
 type CreateRoleUsecase interface {

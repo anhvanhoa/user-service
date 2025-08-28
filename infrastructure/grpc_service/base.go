@@ -1,8 +1,8 @@
 package grpcservice
 
 import (
-	"auth-service/bootstrap"
-	"auth-service/infrastructure/grpc_client"
+	"user-service/bootstrap"
+	"user-service/infrastructure/grpc_client"
 
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"

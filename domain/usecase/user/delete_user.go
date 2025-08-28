@@ -1,8 +1,8 @@
 package userusecase
 
 import (
-	"auth-service/domain/repository"
 	"context"
+	"user-service/domain/repository"
 )
 
 type DeleteUserUsecase interface {

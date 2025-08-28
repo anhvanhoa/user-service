@@ -1,7 +1,7 @@
 package roleusecase
 
 import (
-	"auth-service/domain/repository"
+	"user-service/domain/repository"
 )
 
 type CheckRoleUsecase interface {

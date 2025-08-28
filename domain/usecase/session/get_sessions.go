@@ -1,9 +1,9 @@
 package sessionusecase
 
 import (
-	"auth-service/domain/entity"
-	"auth-service/domain/repository"
 	"context"
+	"user-service/domain/entity"
+	"user-service/domain/repository"
 )
 
 type GetSessionsUsecase interface {
