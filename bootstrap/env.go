@@ -1,13 +1,10 @@
 package bootstrap
 
 import (
-	"auth-service/infrastructure/grpc_client"
-	"log"
-	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/spf13/viper"
+	"github.com/anhvanhoa/service-core/boostrap/config"
+	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
 type jwtSecret struct {
@@ -40,7 +37,7 @@ type queue struct {
 }
 
 type Env struct {
-	MODE_ENV string
+	NODE_ENV string
 
 	URL_DB string
 
@@ -62,34 +59,19 @@ type Env struct {
 
 	MAIL_SERVICE_ADDR string
 
-	GRPC_CLIENTS []*grpc_client.Config
+	GRPC_CLIENTS []*grpc_client.ConfigGrpc
 }
 
 func NewEnv(env any) {
-	absPath, err := filepath.Abs("./")
-	if err != nil {
-		log.Fatal("Error getting the absolute path:", err)
-	}
-
-	mode := os.Getenv("ENV_MODE")
-	viper.SetConfigType("yaml")
-	if mode == "production" {
-		viper.SetConfigName("prod.config")
+	setting := config.DefaultSettingsConfig()
+	if setting.IsProduction() {
+		setting.SetFile("prod.config")
 	} else {
-		viper.SetConfigName("dev.config")
+		setting.SetFile("dev.config")
 	}
-	viper.AddConfigPath(absPath)
-	err = viper.ReadInConfig()
-	if err != nil {
-		panic("Error reading config file, " + err.Error())
-	}
-
-	err = viper.UnmarshalExact(env)
-	if err != nil {
-		panic("Error unmarshalling config file, " + err.Error())
-	}
+	config.NewConfig(setting, env)
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.ToLower(env.MODE_ENV) == "production"
+	return strings.ToLower(env.NODE_ENV) == "production"
 }

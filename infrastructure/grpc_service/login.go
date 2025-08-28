@@ -27,13 +27,13 @@ func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (
 	}
 
 	exp := time.Now().Add(15 * time.Minute)
-	accessToken, err := a.loginUc.GengerateAccessToken(user.ID, user.FullName, exp)
+	accessToken, err := a.loginUc.GengerateAccessToken(user.ID, user.FullName, user.Email, exp)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể tạo access token")
 	}
 
 	refreshExp := time.Now().Add(7 * 24 * time.Hour)
-	refreshToken, err := a.loginUc.GengerateRefreshToken(user.ID, user.FullName, refreshExp, req.GetOs())
+	refreshToken, err := a.loginUc.GengerateRefreshToken(user.ID, user.FullName, user.Email, refreshExp, req.GetOs())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể tạo refresh token")
 	}

@@ -3,14 +3,15 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/cache"
-	se "auth-service/domain/service/error"
-	serviceJwt "auth-service/domain/service/jwt"
 	"context"
+	"errors"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 var (
-	ErrNotFoundSession = se.NewErr("Không tìm thấy phiên làm việc")
+	ErrNotFoundSession = errors.New("không tìm thấy phiên làm việc")
 )
 
 type LogoutUsecase interface {
@@ -20,18 +21,18 @@ type LogoutUsecase interface {
 
 type logoutUsecaseImpl struct {
 	sessionRepo repository.SessionRepository
-	jwt         serviceJwt.JwtService
-	cache       cache.RedisConfigImpl
+	token       token.TokenAuthorizeI
+	cache       cache.CacheI
 }
 
 func NewLogoutUsecase(
 	sessionRepo repository.SessionRepository,
-	jwt serviceJwt.JwtService,
-	cache cache.RedisConfigImpl,
+	token token.TokenAuthorizeI,
+	cache cache.CacheI,
 ) LogoutUsecase {
 	return &logoutUsecaseImpl{
 		sessionRepo,
-		jwt,
+		token,
 		cache,
 	}
 }
@@ -41,7 +42,7 @@ func (l *logoutUsecaseImpl) VerifyToken(token string) error {
 	if err != nil {
 		return ErrNotFoundSession
 	}
-	_, err = l.jwt.VerifyAuthToken(token)
+	_, err = l.token.VerifyAuthorizeToken(token)
 	if err != nil {
 		return err
 	}

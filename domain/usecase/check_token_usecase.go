@@ -3,7 +3,11 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	se "auth-service/domain/service/error"
+	"errors"
+)
+
+var (
+	ErrTokenInvalid = errors.New("phiên làm việc không hợp lệ hoặc đã hết hạn")
 )
 
 type CheckTokenUsecase interface {
@@ -23,10 +27,10 @@ func NewCheckTokenUsecase(sessionRepo repository.SessionRepository) CheckTokenUs
 func (c *checkTokenUsecaseImpl) CheckToken(token string) (bool, error) {
 	session, err := c.sessionRepo.GetSessionAliveByToken(entity.SessionTypeForgot, token)
 	if err != nil {
-		return false, se.NewErr("Phiên làm việc không hợp lệ hoặc đã hết hạn")
+		return false, ErrTokenInvalid
 	}
 	if session.Token == "" {
-		return false, se.NewErr("Phiên làm việc không hợp lệ hoặc đã hết hạn")
+		return false, ErrTokenInvalid
 	}
 	return true, nil
 }

@@ -2,7 +2,12 @@ package usecase
 
 import (
 	"auth-service/domain/repository"
-	se "auth-service/domain/service/error"
+	"errors"
+)
+
+var (
+	ErrCodeInvalid  = errors.New("mã xác thực không hợp lệ")
+	ErrUserNotFound = errors.New("không tìm thấy người dùng với email này")
 )
 
 type CheckCodeUsecase interface {
@@ -24,15 +29,15 @@ func NewCheckCodeUsecase(userRepo repository.UserRepository, session repository.
 func (c *checkCodeUsecaseImpl) CheckCode(code, email string) (bool, error) {
 	user, err := c.userRepo.GetUserByEmail(email)
 	if err != nil {
-		return false, se.NewErr("Không tìm thấy người dùng với email này")
+		return false, ErrUserNotFound
 	}
 
 	session, err := c.session.GetSessionForgotAliveByTokenAndIdUser(code, user.ID)
 	if err != nil {
-		return false, se.NewErr("Mã xác thực không hợp lệ")
+		return false, ErrCodeInvalid
 	}
 	if session.Token == "" {
-		return false, se.NewErr("Mã xác thực không hợp lệ hoặc đã hết hạn")
+		return false, ErrCodeInvalid
 	}
 	return true, nil
 }

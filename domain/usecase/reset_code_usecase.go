@@ -3,11 +3,12 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/argon"
-	"auth-service/domain/service/cache"
-	se "auth-service/domain/service/error"
-	serviceJwt "auth-service/domain/service/jwt"
 	"context"
+	"errors"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 type ResetPasswordByCodeUsecase interface {
@@ -18,30 +19,30 @@ type ResetPasswordByCodeUsecase interface {
 type ResetPasswordByCodeUsecaseImpl struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
-	cache       cache.RedisConfigImpl
-	jwt         serviceJwt.JwtService
-	argon       argon.Argon
+	cache       cache.CacheI
+	jwt         token.TokenForgotPasswordI
+	hashPass    hashpass.HashPassI
 }
 
 var (
-	ErrNotFoundUser   = se.NewErr("Không tìm thấy người dùng")
-	ErrHashPassword   = se.NewErr("Không thể mã hóa mật khẩu")
-	ErrUpdatePassword = se.NewErr("Không thể cập nhật mật khẩu")
+	ErrNotFoundUser   = errors.New("không tìm thấy người dùng")
+	ErrHashPassword   = errors.New("không thể mã hóa mật khẩu")
+	ErrUpdatePassword = errors.New("không thể cập nhật mật khẩu")
 )
 
 func NewResetPasswordCodeUsecase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
-	cache cache.RedisConfigImpl,
-	jwt serviceJwt.JwtService,
-	argon argon.Argon,
+	cache cache.CacheI,
+	token token.TokenForgotPasswordI,
+	hashPass hashpass.HashPassI,
 ) ResetPasswordByCodeUsecase {
 	return &ResetPasswordByCodeUsecaseImpl{
 		userRepo,
 		sessionRepo,
 		cache,
-		jwt,
-		argon,
+		token,
+		hashPass,
 	}
 }
 
@@ -64,7 +65,7 @@ func (uc *ResetPasswordByCodeUsecaseImpl) VerifySession(code, email string) (str
 }
 
 func (uc *ResetPasswordByCodeUsecaseImpl) ResetPass(IdUser, Password, ConfirmPassword string) error {
-	ConfirmPassword, err := uc.argon.HashPassword(ConfirmPassword)
+	ConfirmPassword, err := uc.hashPass.HashPassword(ConfirmPassword)
 	if err != nil {
 		return ErrHashPassword
 	}

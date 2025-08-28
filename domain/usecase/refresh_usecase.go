@@ -3,37 +3,38 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/cache"
-	serviceJwt "auth-service/domain/service/jwt"
 	"context"
 	"time"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 type RefreshUsecase interface {
 	GetSessionByToken(token string) (entity.Session, error)
 	ClearSessionExpired() error
-	VerifyToken(token string) (*serviceJwt.AuthClaims, error)
-	GengerateAccessToken(id string, fullName string, exp time.Time) (string, error)
-	GengerateRefreshToken(id string, fullName string, exp time.Time, os string) (string, error)
+	VerifyToken(token string) (*token.AuthorizeClaims, error)
+	GengerateAccessToken(id, fullName, email string, exp time.Time) (string, error)
+	GengerateRefreshToken(id, fullName, email string, exp time.Time, os string) (string, error)
 }
 
 type refreshUsecaseImpl struct {
 	sessionRepo repository.SessionRepository
-	jwtAccess   serviceJwt.JwtService
-	jwtRefresh  serviceJwt.JwtService
-	cache       cache.RedisConfigImpl
+	access      token.TokenAuthorizeI
+	refresh     token.TokenAuthorizeI
+	cache       cache.CacheI
 }
 
 func NewRefreshUsecase(
 	sessionRepo repository.SessionRepository,
-	jwtAccess serviceJwt.JwtService,
-	jwtRefresh serviceJwt.JwtService,
-	cache cache.RedisConfigImpl,
+	access token.TokenAuthorizeI,
+	refresh token.TokenAuthorizeI,
+	cache cache.CacheI,
 ) RefreshUsecase {
 	return &refreshUsecaseImpl{
 		sessionRepo: sessionRepo,
-		jwtAccess:   jwtAccess,
-		jwtRefresh:  jwtRefresh,
+		access:      access,
+		refresh:     refresh,
 		cache:       cache,
 	}
 }
@@ -56,20 +57,20 @@ func (uc *refreshUsecaseImpl) ClearSessionExpired() error {
 	return nil
 }
 
-func (uc *refreshUsecaseImpl) VerifyToken(token string) (*serviceJwt.AuthClaims, error) {
-	claims, err := uc.jwtRefresh.VerifyAuthToken(token)
+func (uc *refreshUsecaseImpl) VerifyToken(token string) (*token.AuthorizeClaims, error) {
+	claims, err := uc.refresh.VerifyAuthorizeToken(token)
 	if err != nil {
 		return claims, err
 	}
 	return claims, nil
 }
 
-func (uc *refreshUsecaseImpl) GengerateAccessToken(id string, fullName string, exp time.Time) (string, error) {
-	return uc.jwtAccess.GenAuthToken(id, fullName, exp)
+func (uc *refreshUsecaseImpl) GengerateAccessToken(id, fullName, email string, exp time.Time) (string, error) {
+	return uc.access.GenAuthorizeToken(id, fullName, email, exp)
 }
 
-func (uc *refreshUsecaseImpl) GengerateRefreshToken(id string, fullName string, exp time.Time, os string) (string, error) {
-	token, err := uc.jwtRefresh.GenAuthToken(id, fullName, exp)
+func (uc *refreshUsecaseImpl) GengerateRefreshToken(id, fullName, email string, exp time.Time, os string) (string, error) {
+	token, err := uc.refresh.GenAuthorizeToken(id, fullName, email, exp)
 	if err != nil {
 		return "", err
 	}

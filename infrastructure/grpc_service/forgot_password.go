@@ -11,7 +11,6 @@ import (
 )
 
 func (a *authService) ForgotPassword(ctx context.Context, req *proto_auth.ForgotPasswordRequest) (*proto_auth.ForgotPasswordResponse, error) {
-	// Convert method to usecase type
 	var method usecase.ForgotPasswordType
 	switch req.GetMethod() {
 	case proto_auth.ForgotPasswordType_FORGOT_PASSWORD_TYPE_UNSPECIFIED:
@@ -22,13 +21,11 @@ func (a *authService) ForgotPassword(ctx context.Context, req *proto_auth.Forgot
 		return nil, status.Errorf(codes.InvalidArgument, "Phương thức xác thực không hợp lệ")
 	}
 
-	// Process forgot password
 	result, err := a.forgotPasswordUc.ForgotPassword(req.GetEmail(), req.GetOs(), method)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// Convert user to UserInfo
 	userInfo := &proto_auth.UserInfo{
 		Id:       result.User.ID,
 		Email:    result.User.Email,

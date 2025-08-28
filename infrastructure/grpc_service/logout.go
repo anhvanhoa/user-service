@@ -9,12 +9,10 @@ import (
 )
 
 func (a *authService) Logout(ctx context.Context, req *proto_auth.LogoutRequest) (*proto_auth.LogoutResponse, error) {
-	// Verify token
 	if err := a.logoutUc.VerifyToken(req.GetToken()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, "Token không hợp lệ")
 	}
 
-	// Logout user
 	if err := a.logoutUc.Logout(req.GetToken()); err != nil {
 		return nil, status.Error(codes.Internal, "Không thể đăng xuất")
 	}

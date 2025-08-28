@@ -5,15 +5,17 @@ import (
 	"auth-service/domain/common"
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/argon"
-	"auth-service/domain/service/cache"
-	"auth-service/domain/service/goid"
-	serviceJwt "auth-service/domain/service/jwt"
-	"auth-service/domain/service/queue"
-	"auth-service/domain/service/saga"
 	"context"
 	"math/rand"
 	"time"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
+
+	"github.com/anhvanhoa/service-core/domain/goid"
+	"github.com/anhvanhoa/service-core/domain/queue"
+	"github.com/anhvanhoa/service-core/domain/saga"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 type ResRegister struct {
@@ -37,31 +39,33 @@ type RegisterUsecase interface {
 	GengerateCode(length int8) string
 	createOrUpdateUser(user RegisterReq, ctx context.Context) (entity.UserInfor, error)
 	saveToken(token string, id string, os string) error
-	SendMail(payload queue.Payload) (string, error)
-	CompensateRegister(ctx context.Context, userId string) error
+	SendMail(payload queue.PayloadI) (string, error)
+	CompensateRegister(ctx context.Context, userId string, token string) error
 	CompensateSendMail(ctx context.Context, taskID string) error
 }
 
 type registerUsecaseImpl struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
-	jwt         serviceJwt.JwtService
+	jwt         token.TokenAuthI
 	tx          repository.ManagerTransaction
-	goid        goid.GoId
-	argon       argon.Argon
-	cahe        cache.RedisConfigImpl
+	saga        saga.SagaManager
+	goid        goid.GoUUID
+	hashPass    hashpass.HashPassI
+	cache       cache.CacheI
 	qc          queue.QueueClient
 }
 
 func NewRegisterUsecase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
-	jwt serviceJwt.JwtService,
+	jwt token.TokenAuthI,
 	tx repository.ManagerTransaction,
-	goid goid.GoId,
-	argon argon.Argon,
-	cache cache.RedisConfigImpl,
+	goid goid.GoUUID,
+	hashPass hashpass.HashPassI,
+	cache cache.CacheI,
 	queue queue.QueueClient,
+	saga saga.SagaManager,
 ) RegisterUsecase {
 	return &registerUsecaseImpl{
 		userRepo:    userRepo,
@@ -69,9 +73,10 @@ func NewRegisterUsecase(
 		tx:          tx,
 		jwt:         jwt,
 		goid:        goid,
-		argon:       argon,
-		cahe:        cache,
+		hashPass:    hashPass,
+		cache:       cache,
 		qc:          queue,
+		saga:        saga,
 	}
 }
 
@@ -90,7 +95,7 @@ func (uc *registerUsecaseImpl) GengerateCode(length int8) string {
 }
 
 func (uc *registerUsecaseImpl) hashPassword(password string) (string, error) {
-	return uc.argon.HashPassword(password)
+	return uc.hashPass.HashPassword(password)
 }
 
 func (uc *registerUsecaseImpl) Register(user RegisterReq, os string, exp time.Time) (ResRegister, error) {
@@ -103,7 +108,7 @@ func (uc *registerUsecaseImpl) Register(user RegisterReq, os string, exp time.Ti
 		if err = uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, res.UserInfor.ID); err != nil {
 			return err
 		}
-		if res.Token, err = uc.jwt.GenRegisterToken(res.UserInfor.ID, user.Code, exp); err != nil {
+		if res.Token, err = uc.jwt.GenAuthToken(res.UserInfor.ID, user.Code, exp); err != nil {
 			return err
 		}
 		if err = uc.saveToken(res.Token, res.UserInfor.ID, os); err != nil {
@@ -117,7 +122,7 @@ func (uc *registerUsecaseImpl) Register(user RegisterReq, os string, exp time.Ti
 func (uc *registerUsecaseImpl) createOrUpdateUser(user RegisterReq, ctx context.Context) (entity.UserInfor, error) {
 	var userInfo entity.UserInfor
 	var err error
-	id := uc.goid.NewUUID()
+	id := uc.goid.Gen()
 	newUser := entity.User{
 		ID:         id,
 		Email:      user.Email,
@@ -157,7 +162,7 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 		CreatedAt: time.Now(),
 		ExpiredAt: time.Now().Add(constants.VerifyExpiredAt * time.Second),
 	}
-	if err := uc.cahe.Set(token, []byte(token), constants.VerifyExpiredAt*time.Second); err != nil {
+	if err := uc.cache.Set(token, []byte(token), constants.VerifyExpiredAt*time.Second); err != nil {
 		if err := uc.sessionRepo.CreateSession(session); err != nil {
 			return err
 		}
@@ -167,39 +172,27 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 	return nil
 }
 
-func (uc *registerUsecaseImpl) SendMail(payload queue.Payload) (string, error) {
-	Id, err := uc.qc.EnqueueMail(payload)
-	if err != nil {
-		return "", err
-	}
-	return Id, nil
+func (uc *registerUsecaseImpl) SendMail(payload queue.PayloadI) (string, error) {
+	return uc.qc.EnqueueAnyTask(string(constants.QUEUE_MAIL), payload)
 }
 
 func (uc *registerUsecaseImpl) RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error {
-	err := uc.tx.RunSagaTransaction(sagaID, func(ctx context.Context, sagaTx *saga.SagaTransaction) error {
-		if err := execute(ctx, sagaTx); err != nil {
-			return err
-		}
-		return nil
-	})
-	return err
-}
-
-func (uc *registerUsecaseImpl) compensateUserCreation(ctx context.Context, id string) error {
-	return uc.userRepo.DeleteByID(ctx, id)
-}
-
-func (uc *registerUsecaseImpl) compensateSessionCreation(ctx context.Context, userID string) error {
-	return uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, userID)
-}
-
-func (uc *registerUsecaseImpl) CompensateRegister(ctx context.Context, userID string) error {
-	if err := uc.compensateUserCreation(ctx, userID); err != nil {
+	ctx := context.Background()
+	sagaTx := uc.saga.NewTransaction(sagaID, ctx)
+	if err := execute(sagaTx.GetContext(), sagaTx); err != nil {
 		return err
 	}
-	return uc.compensateSessionCreation(ctx, userID)
+	return sagaTx.Execute(sagaTx.GetContext(), sagaID)
+}
+
+func (uc *registerUsecaseImpl) CompensateRegister(ctx context.Context, userID string, token string) error {
+	if err := uc.userRepo.DeleteByID(ctx, userID); err != nil {
+		return err
+	}
+	go uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, userID)
+	return uc.cache.Delete(token)
 }
 
 func (uc *registerUsecaseImpl) CompensateSendMail(ctx context.Context, taskID string) error {
-	return uc.qc.CancelTaskMail(taskID)
+	return uc.qc.CancelTask(queue.TypeMail, taskID)
 }

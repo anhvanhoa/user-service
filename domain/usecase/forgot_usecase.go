@@ -4,13 +4,14 @@ import (
 	"auth-service/constants"
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/cache"
-	se "auth-service/domain/service/error"
-	serviceJwt "auth-service/domain/service/jwt"
 	"context"
+	"errors"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 type ForgotPasswordType string
@@ -21,7 +22,8 @@ const (
 )
 
 var (
-	ErrValidateForgotPassword = se.NewErr("Phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
+	ErrValidateForgotPassword = errors.New("phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
+	ErrCreateSession          = errors.New("không thể tạo phiên làm việc")
 )
 
 type ForgotPasswordRes struct {
@@ -41,22 +43,22 @@ type forgotPasswordUsecaseImpl struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
 	tx          repository.ManagerTransaction
-	jwtService  serviceJwt.JwtService
-	cache       cache.RedisConfigImpl
+	token       token.TokenForgotPasswordI
+	cache       cache.CacheI
 }
 
 func NewForgotPasswordUsecase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
 	tx repository.ManagerTransaction,
-	jwtService serviceJwt.JwtService,
-	cache cache.RedisConfigImpl,
+	token token.TokenForgotPasswordI,
+	cache cache.CacheI,
 ) ForgotPasswordUsecase {
 	return &forgotPasswordUsecaseImpl{
 		userRepo,
 		sessionRepo,
 		tx,
-		jwtService,
+		token,
 		cache,
 	}
 }
@@ -76,7 +78,7 @@ func (uc *forgotPasswordUsecaseImpl) saveCodeOrToken(typeForgot ForgotPasswordTy
 	}
 	if err := uc.cache.Set(key, []byte(codeOrToken), constants.ForgotExpiredAt*time.Minute); err != nil {
 		if err := uc.sessionRepo.CreateSession(session); err != nil {
-			return se.NewErr("không thể tạo phiên làm việc")
+			return ErrCreateSession
 		}
 	} else {
 		go uc.sessionRepo.CreateSession(session)
@@ -106,7 +108,7 @@ func (uc *forgotPasswordUsecaseImpl) ForgotPassword(email, os string, method For
 		return resForgotPassword, nil
 	case ForgotByToken:
 		code := uc.generateRandomCode(6)
-		resForgotPassword.Token, err = uc.jwtService.GenForgotPasswordToken(user.ID, code, exp)
+		resForgotPassword.Token, err = uc.token.GenForgotPasswordToken(user.ID, code, exp)
 		if err != nil {
 			return resForgotPassword, err
 		}

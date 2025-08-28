@@ -3,42 +3,43 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/argon"
-	"auth-service/domain/service/cache"
-	serviceJwt "auth-service/domain/service/jwt"
 	"time"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
+	"github.com/anhvanhoa/service-core/domain/token"
 )
 
 type LoginUsecase interface {
 	GetUserByEmailOrPhone(val string) (entity.User, error)
 	CheckHashPassword(password, hash string) bool
-	GengerateAccessToken(id string, fullName string, exp time.Time) (string, error)
-	GengerateRefreshToken(id string, fullName string, exp time.Time, os string) (string, error)
+	GengerateAccessToken(id, fullName, email string, exp time.Time) (string, error)
+	GengerateRefreshToken(id, fullName, email string, exp time.Time, os string) (string, error)
 }
 
 type loginUsecaseImpl struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
-	jwtAccess   serviceJwt.JwtService
-	jwtRefresh  serviceJwt.JwtService
-	argon       argon.Argon
-	cache       cache.RedisConfigImpl
+	jwtAccess   token.TokenAuthorizeI
+	jwtRefresh  token.TokenAuthorizeI
+	hassPass    hashpass.HashPassI
+	cache       cache.CacheI
 }
 
 func NewLoginUsecase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
-	jwtAccess serviceJwt.JwtService,
-	jwtRefresh serviceJwt.JwtService,
-	argon argon.Argon,
-	cache cache.RedisConfigImpl,
+	jwtAccess token.TokenAuthorizeI,
+	jwtRefresh token.TokenAuthorizeI,
+	hassPass hashpass.HashPassI,
+	cache cache.CacheI,
 ) LoginUsecase {
 	return &loginUsecaseImpl{
 		userRepo,
 		sessionRepo,
 		jwtAccess,
 		jwtRefresh,
-		argon,
+		hassPass,
 		cache,
 	}
 }
@@ -48,19 +49,19 @@ func (uc *loginUsecaseImpl) GetUserByEmailOrPhone(val string) (entity.User, erro
 }
 
 func (uc *loginUsecaseImpl) CheckHashPassword(password, hash string) bool {
-	mach, err := uc.argon.VerifyPassword(hash, password)
+	mach, err := uc.hassPass.VerifyPassword(hash, password)
 	if err != nil {
 		return false
 	}
 	return mach
 }
 
-func (uc *loginUsecaseImpl) GengerateAccessToken(id string, fullName string, exp time.Time) (string, error) {
-	return uc.jwtAccess.GenAuthToken(id, fullName, exp)
+func (uc *loginUsecaseImpl) GengerateAccessToken(id, fullName, email string, exp time.Time) (string, error) {
+	return uc.jwtAccess.GenAuthorizeToken(id, fullName, email, exp)
 }
 
-func (uc *loginUsecaseImpl) GengerateRefreshToken(id string, fullName string, exp time.Time, os string) (string, error) {
-	token, err := uc.jwtRefresh.GenAuthToken(id, fullName, exp)
+func (uc *loginUsecaseImpl) GengerateRefreshToken(id, fullName, email string, exp time.Time, os string) (string, error) {
+	token, err := uc.jwtRefresh.GenAuthorizeToken(id, fullName, email, exp)
 	if err != nil {
 		return "", err
 	}

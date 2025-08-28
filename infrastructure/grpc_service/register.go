@@ -2,13 +2,13 @@ package grpcservice
 
 import (
 	"auth-service/constants"
-	"auth-service/domain/service/queue"
-	"auth-service/domain/service/saga"
 	"auth-service/domain/usecase"
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/anhvanhoa/service-core/domain/queue"
+	"github.com/anhvanhoa/service-core/domain/saga"
 	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 	proto_mail_history "github.com/anhvanhoa/sf-proto/gen/mail_history/v1"
 	proto_mail_template "github.com/anhvanhoa/sf-proto/gen/mail_tmpl/v1"
@@ -31,8 +31,8 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 	var result usecase.ResRegister
 	exp := time.Now().Add(15 * time.Minute)
 	os := "web"
-	sagaId := fmt.Sprintf("register-%s-%s", req.GetEmail(), a.goId.NewUUID())
-	err = a.registerUc.RegisterWithSaga(sagaId, func(ctx context.Context, sagaTx *saga.SagaTransaction) error {
+	sagaId := fmt.Sprintf("register-%s-%s", req.GetEmail(), a.uuid.Gen())
+	err = a.registerUc.RegisterWithSaga(sagaId, func(ctx context.Context, sagaTx saga.SagaTransactionI) error {
 		code := a.registerUc.GengerateCode(6)
 		registerReq := usecase.RegisterReq{
 			Email:           req.GetEmail(),
@@ -43,14 +43,14 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		}
 		var err error
 		sagaTx.AddStep(
-			saga.NewStep(
+			saga.NewSagaStep(
 				"Register",
 				func(ctx context.Context) error {
 					result, err = a.registerUc.Register(registerReq, os, exp)
 					return err
 				},
 				func(ctx context.Context) error {
-					return a.registerUc.CompensateRegister(ctx, result.UserInfor.ID)
+					return a.registerUc.CompensateRegister(ctx, result.UserInfor.ID, result.Token)
 				},
 			),
 		)
@@ -59,7 +59,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			"link": a.env.FRONTEND_URL + "/auth/verify/" + result.Token,
 			"user": result.UserInfor,
 		}
-		sagaTx.AddStep(saga.NewStep(
+		sagaTx.AddStep(saga.NewSagaStep(
 			"GetMailTemplate",
 			func(ctx context.Context) error {
 				if tmpl, err = a.mailService.Mtc.GetMailTmpl(ctx, &proto_mail_template.GetMailTmplRequest{
@@ -72,16 +72,11 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		))
 
 		var taskId string
-		sagaTx.AddStep(saga.NewStep(
+		sagaTx.AddStep(saga.NewSagaStep(
 			"SendMail",
 			func(ctx context.Context) error {
-				payload := queue.Payload{
-					Data:     data,
-					Provider: tmpl.MailTmpl.ProviderEmail,
-					Tos:      &[]string{result.UserInfor.Email},
-					Template: tmpl.MailTmpl.Id,
-				}
-				if taskId, err = a.registerUc.SendMail(payload); err != nil {
+				payload := queue.NewPayload(data, []string{result.UserInfor.Email}, tmpl.MailTmpl.Id)
+				if taskId, err = a.registerUc.SendMail(&payload); err != nil {
 					return err
 				}
 				return nil
@@ -98,7 +93,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			}
 		}
 
-		sagaTx.AddStep(saga.NewStep(
+		sagaTx.AddStep(saga.NewSagaStep(
 			"CreateMailHistory",
 			func(ctx context.Context) error {
 				if _, err := a.mailService.Mhc.CreateMailHistory(ctx, &proto_mail_history.CreateMailHistoryRequest{
@@ -122,7 +117,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			},
 		))
 
-		sagaTx.AddStep(saga.NewStep(
+		sagaTx.AddStep(saga.NewSagaStep(
 			"CreateStatusHistory",
 			func(ctx context.Context) error {
 				if _, err := a.mailService.Shc.CreateStatusHistory(ctx, &proto_status_history.CreateStatusHistoryRequest{

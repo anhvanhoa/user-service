@@ -3,15 +3,20 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
-	"auth-service/domain/service/cache"
-	serviceJwt "auth-service/domain/service/jwt"
-	pkgjwt "auth-service/infrastructure/service/jwt"
 	"context"
+	"errors"
 	"time"
+
+	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/token"
+)
+
+var (
+	ErrTokenNotFound = errors.New("token not found")
 )
 
 type VerifyAccountUsecase interface {
-	VerifyRegister(t string) (*serviceJwt.VerifyClaims, error)
+	VerifyRegister(t string) (*token.AuthClaims, error)
 	GetUserById(id string) (entity.User, error)
 	VerifyAccount(id string) error
 }
@@ -19,28 +24,28 @@ type VerifyAccountUsecase interface {
 type verifyAccountUsecaseImpl struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
-	jwt         serviceJwt.JwtService
-	cache       cache.RedisConfigImpl
+	token       token.TokenAuthI
+	cache       cache.CacheI
 }
 
 func NewVerifyAccountUsecase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
-	jwt serviceJwt.JwtService,
-	cache cache.RedisConfigImpl,
+	token token.TokenAuthI,
+	cache cache.CacheI,
 ) VerifyAccountUsecase {
 	return &verifyAccountUsecaseImpl{
 		userRepo,
 		sessionRepo,
-		jwt,
+		token,
 		cache,
 	}
 }
 
-func (u *verifyAccountUsecaseImpl) VerifyRegister(t string) (*serviceJwt.VerifyClaims, error) {
+func (u *verifyAccountUsecaseImpl) VerifyRegister(t string) (*token.AuthClaims, error) {
 	if _, err := u.cache.Get(t); err != nil {
 		if isExist := u.sessionRepo.TokenExists(t); !isExist {
-			return nil, pkgjwt.ErrTokenNotFound
+			return nil, ErrTokenNotFound
 		}
 	} else {
 		go func() {
@@ -49,7 +54,7 @@ func (u *verifyAccountUsecaseImpl) VerifyRegister(t string) (*serviceJwt.VerifyC
 		}()
 	}
 
-	data, err := u.jwt.VerifyRegisterToken(t)
+	data, err := u.token.VerifyAuthToken(t)
 	if err != nil {
 		return nil, err
 	}

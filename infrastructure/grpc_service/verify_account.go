@@ -16,13 +16,13 @@ func (a *authService) VerifyAccount(ctx context.Context, req *proto_auth.VerifyA
 	}
 
 	// Get user by ID
-	_, err = a.verifyAccountUc.GetUserById(claims.Id)
+	_, err = a.verifyAccountUc.GetUserById(claims.Data.Id)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "Không tìm thấy người dùng")
 	}
 
 	// Verify account
-	if err := a.verifyAccountUc.VerifyAccount(claims.Id); err != nil {
+	if err := a.verifyAccountUc.VerifyAccount(claims.Data.Id); err != nil {
 		return nil, status.Error(codes.Internal, "Không thể xác thực tài khoản")
 	}
 

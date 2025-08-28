@@ -1,8 +1,9 @@
 package common
 
 import (
-	"auth-service/domain/service/saga"
 	"context"
+
+	"github.com/anhvanhoa/service-core/domain/saga"
 )
 
-type ExecuteSaga func(ctx context.Context, sagaTx *saga.SagaTransaction) error
+type ExecuteSaga func(ctx context.Context, sagaTx saga.SagaTransactionI) error
