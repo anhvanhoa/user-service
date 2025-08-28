@@ -10,6 +10,9 @@ type SessionRepository interface {
 	GetSessionAliveByToken(typeSession entity.SessionType, token string) (entity.Session, error)
 	GetSessionAliveByTokenAndIdUser(typeSession entity.SessionType, token, idUser string) (entity.Session, error)
 	GetSessionForgotAliveByTokenAndIdUser(token, idUser string) (entity.Session, error)
+	GetAllSessions(ctx context.Context) ([]entity.Session, error)
+	GetSessionsByUserID(ctx context.Context, userID string) ([]entity.Session, error)
+	GetSessionsByType(ctx context.Context, sessionType entity.SessionType) ([]entity.Session, error)
 	TokenExists(token string) bool
 	DeleteSessionByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) error
 	DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error

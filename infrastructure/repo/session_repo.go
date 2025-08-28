@@ -131,6 +131,33 @@ func (sr *sessionRepositoryImpl) DeleteAllSessionsForgot(ctx context.Context) er
 	return nil
 }
 
+func (sr *sessionRepositoryImpl) GetAllSessions(ctx context.Context) ([]entity.Session, error) {
+	var sessions []entity.Session
+	err := sr.db.ModelContext(ctx, &sessions).Select()
+	if err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func (sr *sessionRepositoryImpl) GetSessionsByUserID(ctx context.Context, userID string) ([]entity.Session, error) {
+	var sessions []entity.Session
+	err := sr.db.ModelContext(ctx, &sessions).Where("user_id = ?", userID).Select()
+	if err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func (sr *sessionRepositoryImpl) GetSessionsByType(ctx context.Context, sessionType entity.SessionType) ([]entity.Session, error) {
+	var sessions []entity.Session
+	err := sr.db.ModelContext(ctx, &sessions).Where("type = ?", sessionType).Select()
+	if err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
+
 func (sr *sessionRepositoryImpl) Tx(ctx context.Context) repository.SessionRepository {
 	tx := getTx(ctx, sr.db)
 	return &sessionRepositoryImpl{
