@@ -82,9 +82,9 @@ func (rr *roleRepository) UpdateRole(id string, role entity.Role) (entity.Role, 
 	return role, nil
 }
 
-func (rr *roleRepository) DeleteByID(ctx context.Context, id string) error {
+func (rr *roleRepository) DeleteByID(id string) error {
 	var role entity.Role
-	_, err := rr.db.ModelContext(ctx, &role).Where("id = ?", id).Delete()
+	_, err := rr.db.Model(&role).Where("id = ?", id).Delete()
 	return err
 }
 

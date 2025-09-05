@@ -1,4 +1,4 @@
-package sessionusecase
+package session
 
 import (
 	"context"

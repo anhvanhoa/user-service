@@ -55,6 +55,15 @@ func (sr *sessionRepositoryImpl) GetSessionForgotAliveByTokenAndIdUser(token, id
 	return sr.GetSessionAliveByTokenAndIdUser(entity.SessionTypeForgot, token, idUser)
 }
 
+func (sr *sessionRepositoryImpl) GetTokensByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) ([]string, error) {
+	var tokens []string
+	err := sr.db.Model(&entity.Session{}).Where("type = ? AND user_id = ?", sessionType, userID).Select(&tokens)
+	if err != nil {
+		return nil, err
+	}
+	return tokens, nil
+}
+
 func (sr *sessionRepositoryImpl) TokenExists(token string) bool {
 	count, err := sr.db.Model(&entity.Session{}).Where("token = ?", token).
 		Where("expired_at > NOW()").
@@ -90,7 +99,7 @@ func (sr *sessionRepositoryImpl) DeleteSessionByTypeAndToken(ctx context.Context
 }
 
 func (sr *sessionRepositoryImpl) DeleteSessionAuthByToken(ctx context.Context, token string) error {
-	return sr.DeleteSessionByTypeAndToken(ctx, entity.SessionTypeAuth, token)
+	return sr.DeleteSessionByTypeAndToken(ctx, entity.SessionTypeAuthZ, token)
 }
 
 func (sr *sessionRepositoryImpl) DeleteSessionVerifyByToken(ctx context.Context, token string) error {

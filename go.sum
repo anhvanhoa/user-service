@@ -21,6 +21,12 @@ github.com/anhvanhoa/sf-proto v1.1.6-0.20250903072551-1b0126b7334c h1:hyn5YXYfqK
 github.com/anhvanhoa/sf-proto v1.1.6-0.20250903072551-1b0126b7334c/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
 github.com/anhvanhoa/sf-proto v1.1.6-0.20250903161650-d62264a11d25 h1:B9XeiiVsR1aEWpg4FWFCMamPFmIoPlkVOzs/EkhSjm4=
 github.com/anhvanhoa/sf-proto v1.1.6-0.20250903161650-d62264a11d25/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905022237-82c3ff92b77d h1:uqzhepKyUrBnywmB5sn24rFTHO2nc2BMil46axVQwDs=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905022237-82c3ff92b77d/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905032845-fc6b69633b5c h1:O6UyxPkAMa0Y9xhDU3qNNIZO2I68WzfQDjCfP91PtM0=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905032845-fc6b69633b5c/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905034142-c5e3ac6007b7 h1:y/ZG7SREjK+2MJhtrxqhuVt/HGKY9sj4QnmmyifE7Ps=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250905034142-c5e3ac6007b7/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/armon/go-metrics v0.4.1 h1:hR91U9KYmb6bLBYLQjyM+3j+rcd/UhE+G78SFnF8gJA=

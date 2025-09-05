@@ -3,16 +3,9 @@ package bootstrap
 import (
 	"strings"
 
-	"github.com/anhvanhoa/service-core/boostrap/config"
+	"github.com/anhvanhoa/service-core/bootstrap/config"
 	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
-
-type jwtSecret struct {
-	Access  string `mapstructure:"access"`
-	Refresh string `mapstructure:"refresh"`
-	Verify  string `mapstructure:"verify"`
-	Forgot  string `mapstructure:"forgot"`
-}
 
 type dbCache struct {
 	Addr        string `mapstructure:"addr"`
@@ -49,15 +42,7 @@ type Env struct {
 
 	DbCache *dbCache `mapstructure:"db_cache"`
 
-	SecretOtp string `mapstructure:"secret_otp"`
-
 	Queue *queue `mapstructure:"queue"`
-
-	JwtSecret *jwtSecret `mapstructure:"jwt_secret"`
-
-	FrontendUrl string `mapstructure:"frontend_url"`
-
-	MailServiceAddr string `mapstructure:"mail_service_addr"`
 
 	GrpcClients []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
 }

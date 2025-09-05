@@ -1,12 +1,11 @@
-package roleusecase
+package role
 
 import (
-	"context"
 	"user-service/domain/repository"
 )
 
 type DeleteRoleUsecase interface {
-	Excute(ctx context.Context, id string) error
+	Excute(id string) error
 }
 
 type deleteRoleUsecase struct {
@@ -19,6 +18,6 @@ func NewDeleteRoleUsecase(roleRepo repository.RoleRepository) DeleteRoleUsecase 
 	}
 }
 
-func (d *deleteRoleUsecase) Excute(ctx context.Context, id string) error {
-	return d.roleRepo.DeleteByID(ctx, id)
+func (d *deleteRoleUsecase) Excute(id string) error {
+	return d.roleRepo.DeleteByID(id)
 }

@@ -1,8 +1,8 @@
-package roleusecase
+package role
 
 import (
-	"context"
 	"user-service/domain/entity"
+	"user-service/domain/repository"
 )
 
 type RoleUsecaseI interface {
@@ -10,7 +10,7 @@ type RoleUsecaseI interface {
 	GetRoleById(id string) (entity.Role, error)
 	CreateRole(role entity.Role) error
 	UpdateRole(id string, role entity.Role) (entity.Role, error)
-	DeleteRole(ctx context.Context, id string) error
+	DeleteRole(id string) error
 	CheckRole(name string) (bool, error)
 }
 
@@ -24,20 +24,15 @@ type roleUsecase struct {
 }
 
 func NewRoleUsecase(
-	getAllRolesUsecase GetAllRolesUsecase,
-	getRoleByIdUsecase GetRoleByIDUsecase,
-	createRoleUsecase CreateRoleUsecase,
-	updateRoleUsecase UpdateRoleUsecase,
-	deleteRoleUsecase DeleteRoleUsecase,
-	checkRoleUsecase CheckRoleUsecase,
+	roleRepo repository.RoleRepository,
 ) RoleUsecaseI {
 	return &roleUsecase{
-		getAllRolesUsecase: getAllRolesUsecase,
-		getRoleByIdUsecase: getRoleByIdUsecase,
-		createRoleUsecase:  createRoleUsecase,
-		updateRoleUsecase:  updateRoleUsecase,
-		deleteRoleUsecase:  deleteRoleUsecase,
-		checkRoleUsecase:   checkRoleUsecase,
+		getAllRolesUsecase: NewGetAllRolesUsecase(roleRepo),
+		getRoleByIdUsecase: NewGetRoleByIDUsecase(roleRepo),
+		createRoleUsecase:  NewCreateRoleUsecase(roleRepo),
+		updateRoleUsecase:  NewUpdateRoleUsecase(roleRepo),
+		deleteRoleUsecase:  NewDeleteRoleUsecase(roleRepo),
+		checkRoleUsecase:   NewCheckRoleUsecase(roleRepo),
 	}
 }
 
@@ -57,8 +52,8 @@ func (r *roleUsecase) UpdateRole(id string, role entity.Role) (entity.Role, erro
 	return r.updateRoleUsecase.Excute(id, role)
 }
 
-func (r *roleUsecase) DeleteRole(ctx context.Context, id string) error {
-	return r.deleteRoleUsecase.Excute(ctx, id)
+func (r *roleUsecase) DeleteRole(id string) error {
+	return r.deleteRoleUsecase.Excute(id)
 }
 
 func (r *roleUsecase) CheckRole(name string) (bool, error) {

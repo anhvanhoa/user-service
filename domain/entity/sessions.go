@@ -7,7 +7,7 @@ import (
 type SessionType string
 
 const (
-	SessionTypeAuth   SessionType = "authorization"
+	SessionTypeAuthZ  SessionType = "authorization"
 	SessionTypeForgot SessionType = "forgot"
 	SessionTypeReset  SessionType = "reset"
 	SessionTypeVerify SessionType = "verify"

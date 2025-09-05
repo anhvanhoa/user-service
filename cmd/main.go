@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"user-service/bootstrap"
-	"user-service/infrastructure/grpc_client"
 	grpcservice "user-service/infrastructure/grpc_service"
+	role_server "user-service/infrastructure/grpc_service/role"
+	session_server "user-service/infrastructure/grpc_service/session"
+	user_server "user-service/infrastructure/grpc_service/user"
 
 	"github.com/anhvanhoa/service-core/domain/discovery"
-	gc "github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
 func main() {
@@ -16,7 +17,6 @@ func main() {
 	log := app.Log
 	db := app.DB
 	cache := app.Cache
-	queueClient := app.Queue
 	discoveryConfig := discovery.DiscoveryConfig{
 		ServiceName:   env.NameService,
 		ServicePort:   env.PortGrpc,
@@ -30,13 +30,10 @@ func main() {
 	}
 	discoveryClient.Register()
 	defer discoveryClient.Close(env.NameService)
-
-	clientFactory := gc.NewClientFactory(env.GrpcClients...)
-	client := clientFactory.GetClient(env.MailServiceAddr)
-	mailService := grpc_client.NewMailService(client)
-
-	authService := grpcservice.NewAuthService(db, env, log, mailService, queueClient, cache)
-	grpcSrv := grpcservice.NewGRPCServer(env, authService, log)
+	userService := user_server.NewUserServer(db)
+	sessionService := session_server.NewSessionServer(db, cache)
+	roleService := role_server.NewRoleServer(db)
+	grpcSrv := grpcservice.NewGRPCServer(env, log, userService, sessionService, roleService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {

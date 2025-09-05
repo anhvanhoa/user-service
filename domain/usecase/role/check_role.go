@@ -1,4 +1,4 @@
-package roleusecase
+package role
 
 import (
 	"user-service/domain/repository"

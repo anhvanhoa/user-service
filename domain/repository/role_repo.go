@@ -11,7 +11,7 @@ type RoleRepository interface {
 	GetRoleByName(name string) (entity.Role, error)
 	GetAllRoles() ([]entity.Role, error)
 	UpdateRole(id string, role entity.Role) (entity.Role, error)
-	DeleteByID(ctx context.Context, id string) error
+	DeleteByID(id string) error
 	CheckRoleExist(name string) (bool, error)
 	Tx(ctx context.Context) RoleRepository
 }
