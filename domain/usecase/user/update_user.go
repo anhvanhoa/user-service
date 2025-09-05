@@ -1,4 +1,4 @@
-package userusecase
+package user
 
 import (
 	"time"
@@ -7,9 +7,7 @@ import (
 )
 
 type UpdateUserUsecase interface {
-	UpdateUser(id string, data entity.User) (entity.UserInfor, error)
-	UpdateUserByEmail(email string, data entity.User) (bool, error)
-	UpdateUserWithRoles(id string, data entity.User, roleIDs []string) (entity.UserInfor, error)
+	Excute(id string, data entity.User, roleIDs []string) (entity.UserInfor, error)
 }
 
 type updateUserUsecase struct {
@@ -24,21 +22,7 @@ func NewUpdateUserUsecase(userRepo repository.UserRepository, userRoleRepo repos
 	}
 }
 
-func (u *updateUserUsecase) UpdateUser(id string, data entity.User) (entity.UserInfor, error) {
-	now := time.Now()
-	data.UpdatedAt = &now
-
-	return u.userRepo.UpdateUser(id, data)
-}
-
-func (u *updateUserUsecase) UpdateUserByEmail(email string, data entity.User) (bool, error) {
-	now := time.Now()
-	data.UpdatedAt = &now
-
-	return u.userRepo.UpdateUserByEmail(email, data)
-}
-
-func (u *updateUserUsecase) UpdateUserWithRoles(id string, data entity.User, roleIDs []string) (entity.UserInfor, error) {
+func (u *updateUserUsecase) Excute(id string, data entity.User, roleIDs []string) (entity.UserInfor, error) {
 	now := time.Now()
 	data.UpdatedAt = &now
 

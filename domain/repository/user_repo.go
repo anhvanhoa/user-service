@@ -13,6 +13,6 @@ type UserRepository interface {
 	GetUserByEmail(email string) (entity.User, error)
 	UpdateUser(Id string, data entity.User) (entity.UserInfor, error)
 	UpdateUserByEmail(email string, data entity.User) (bool, error)
-	DeleteByID(ctx context.Context, id string) error
+	DeleteByID(id string) error
 	Tx(ctx context.Context) UserRepository
 }

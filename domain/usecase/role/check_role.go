@@ -5,7 +5,7 @@ import (
 )
 
 type CheckRoleUsecase interface {
-	CheckRoleExist(name string) (bool, error)
+	Excute(name string) (bool, error)
 }
 
 type checkRoleUsecase struct {
@@ -18,6 +18,6 @@ func NewCheckRoleUsecase(roleRepo repository.RoleRepository) CheckRoleUsecase {
 	}
 }
 
-func (c *checkRoleUsecase) CheckRoleExist(name string) (bool, error) {
+func (c *checkRoleUsecase) Excute(name string) (bool, error) {
 	return c.roleRepo.CheckRoleExist(name)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteSessionByTypeAndTokenUsecase interface {
-	DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error
+	Excute(ctx context.Context, sessionType entity.SessionType, token string) error
 }
 
 type deleteSessionByTypeAndTokenUsecase struct {
@@ -20,6 +20,6 @@ func NewDeleteSessionByTypeAndTokenUsecase(sessionRepo repository.SessionReposit
 	}
 }
 
-func (d *deleteSessionByTypeAndTokenUsecase) DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error {
+func (d *deleteSessionByTypeAndTokenUsecase) Excute(ctx context.Context, sessionType entity.SessionType, token string) error {
 	return d.sessionRepo.DeleteSessionByTypeAndToken(ctx, sessionType, token)
 }

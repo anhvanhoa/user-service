@@ -6,7 +6,7 @@ import (
 )
 
 type CreateRoleUsecase interface {
-	CreateRole(role entity.Role) error
+	Excute(role entity.Role) error
 }
 
 type createRoleUsecase struct {
@@ -19,6 +19,6 @@ func NewCreateRoleUsecase(roleRepo repository.RoleRepository) CreateRoleUsecase 
 	}
 }
 
-func (c *createRoleUsecase) CreateRole(role entity.Role) error {
+func (c *createRoleUsecase) Excute(role entity.Role) error {
 	return c.roleRepo.CreateRole(role)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type UpdateRoleUsecase interface {
-	UpdateRole(id string, role entity.Role) (entity.Role, error)
+	Excute(id string, role entity.Role) (entity.Role, error)
 }
 
 type updateRoleUsecase struct {
@@ -20,7 +20,7 @@ func NewUpdateRoleUsecase(roleRepo repository.RoleRepository) UpdateRoleUsecase 
 	}
 }
 
-func (u *updateRoleUsecase) UpdateRole(id string, role entity.Role) (entity.Role, error) {
+func (u *updateRoleUsecase) Excute(id string, role entity.Role) (entity.Role, error) {
 	now := time.Now()
 	role.UpdatedAt = &now
 

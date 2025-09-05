@@ -1,11 +1,11 @@
-package userusecase
+package user
 
 import (
 	"user-service/domain/repository"
 )
 
 type UpdateUserRolesUsecase interface {
-	UpdateUserRoles(userID string, roleIDs []string) error
+	Excute(userID string, roleIDs []string) error
 }
 
 type updateUserRolesUsecase struct {
@@ -18,6 +18,6 @@ func NewUpdateUserRolesUsecase(userRoleRepo repository.UserRoleRepository) Updat
 	}
 }
 
-func (u *updateUserRolesUsecase) UpdateUserRoles(userID string, roleIDs []string) error {
+func (u *updateUserRolesUsecase) Excute(userID string, roleIDs []string) error {
 	return u.userRoleRepo.UpdateUserRoles(userID, roleIDs)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type DeleteSessionForgotUsecase interface {
-	DeleteAllSessionsForgot(ctx context.Context) error
+	Excute(ctx context.Context) error
 }
 
 type deleteSessionForgotUsecase struct {
@@ -19,6 +19,6 @@ func NewDeleteSessionForgotUsecase(sessionRepo repository.SessionRepository) Del
 	}
 }
 
-func (d *deleteSessionForgotUsecase) DeleteAllSessionsForgot(ctx context.Context) error {
+func (d *deleteSessionForgotUsecase) Excute(ctx context.Context) error {
 	return d.sessionRepo.DeleteAllSessionsForgot(ctx)
 }

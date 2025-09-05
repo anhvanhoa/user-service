@@ -6,7 +6,7 @@ import (
 )
 
 type DeleteSessionExpiredUsecase interface {
-	DeleteAllSessionsExpired(ctx context.Context) error
+	Excute(ctx context.Context) error
 }
 
 type deleteSessionExpiredUsecase struct {
@@ -19,6 +19,6 @@ func NewDeleteSessionExpiredUsecase(sessionRepo repository.SessionRepository) De
 	}
 }
 
-func (d *deleteSessionExpiredUsecase) DeleteAllSessionsExpired(ctx context.Context) error {
+func (d *deleteSessionExpiredUsecase) Excute(ctx context.Context) error {
 	return d.sessionRepo.DeleteAllSessionsExpired(ctx)
 }

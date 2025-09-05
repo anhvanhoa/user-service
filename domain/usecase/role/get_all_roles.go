@@ -6,7 +6,7 @@ import (
 )
 
 type GetAllRolesUsecase interface {
-	GetAllRoles() ([]entity.Role, error)
+	Excute() ([]entity.Role, error)
 }
 
 type getAllRolesUsecase struct {
@@ -19,6 +19,6 @@ func NewGetAllRolesUsecase(roleRepo repository.RoleRepository) GetAllRolesUsecas
 	}
 }
 
-func (g *getAllRolesUsecase) GetAllRoles() ([]entity.Role, error) {
+func (g *getAllRolesUsecase) Excute() ([]entity.Role, error) {
 	return g.roleRepo.GetAllRoles()
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type GetRoleByIDUsecase interface {
-	GetRoleByID(id string) (entity.Role, error)
+	Excute(id string) (entity.Role, error)
 }
 
 type getRoleByIDUsecase struct {
@@ -19,6 +19,6 @@ func NewGetRoleByIDUsecase(roleRepo repository.RoleRepository) GetRoleByIDUsecas
 	}
 }
 
-func (g *getRoleByIDUsecase) GetRoleByID(id string) (entity.Role, error) {
+func (g *getRoleByIDUsecase) Excute(id string) (entity.Role, error) {
 	return g.roleRepo.GetRoleByID(id)
 }

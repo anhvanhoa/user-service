@@ -1,12 +1,11 @@
-package userusecase
+package user
 
 import (
-	"context"
 	"user-service/domain/repository"
 )
 
 type DeleteUserUsecase interface {
-	DeleteUser(ctx context.Context, id string) error
+	Excute(id string) error
 }
 
 type deleteUserUsecase struct {
@@ -19,6 +18,6 @@ func NewDeleteUserUsecase(userRepo repository.UserRepository) DeleteUserUsecase 
 	}
 }
 
-func (d *deleteUserUsecase) DeleteUser(ctx context.Context, id string) error {
-	return d.userRepo.DeleteByID(ctx, id)
+func (d *deleteUserUsecase) Excute(id string) error {
+	return d.userRepo.DeleteByID(id)
 }

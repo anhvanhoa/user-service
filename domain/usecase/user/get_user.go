@@ -1,4 +1,4 @@
-package userusecase
+package user
 
 import (
 	"user-service/domain/entity"
@@ -6,9 +6,7 @@ import (
 )
 
 type GetUserUsecase interface {
-	GetUserByID(id string) (entity.User, error)
-	GetUserByEmail(email string) (entity.User, error)
-	GetUserByEmailOrPhone(val string) (entity.User, error)
+	Excute(id string) (entity.User, error)
 }
 
 type getUserUsecase struct {
@@ -21,14 +19,6 @@ func NewGetUserUsecase(userRepo repository.UserRepository) GetUserUsecase {
 	}
 }
 
-func (g *getUserUsecase) GetUserByID(id string) (entity.User, error) {
+func (g *getUserUsecase) Excute(id string) (entity.User, error) {
 	return g.userRepo.GetUserByID(id)
-}
-
-func (g *getUserUsecase) GetUserByEmail(email string) (entity.User, error) {
-	return g.userRepo.GetUserByEmail(email)
-}
-
-func (g *getUserUsecase) GetUserByEmailOrPhone(val string) (entity.User, error) {
-	return g.userRepo.GetUserByEmailOrPhone(val)
 }
