@@ -1,0 +1,16 @@
+node_env: development
+url_db: postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable
+name_service: UserService
+port_grpc: 50050
+host_grpc: localhost
+interval_check: 10s
+timeout_check: 10s
+
+db_cache:
+  addr: localhost:6379
+  db: 1
+  password: ""
+  max_idle: 10
+  max_active: 10
+  idle_timeout: 10
+  network: tcp
