@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/anhvanhoa/service-core/bootstrap/config"
-	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
 type dbCache struct {
@@ -15,18 +14,6 @@ type dbCache struct {
 	MaxActive   int    `mapstructure:"max_active"`
 	IdleTimeout int    `mapstructure:"idle_timeout"`
 	Network     string `mapstructure:"network"`
-}
-
-type queue struct {
-	Addr        string         `mapstructure:"addr"`
-	Db          int            `mapstructure:"db"`
-	Password    string         `mapstructure:"password"`
-	MaxIdle     int            `mapstructure:"max_idle"`
-	MaxActive   int            `mapstructure:"max_active"`
-	IdleTimeout int            `mapstructure:"idle_timeout"`
-	Network     string         `mapstructure:"network"`
-	Concurrency int            `mapstructure:"concurrency"`
-	Queues      map[string]int `mapstructure:"queues"`
 }
 
 type Env struct {
@@ -41,10 +28,6 @@ type Env struct {
 	TimeoutCheck  string `mapstructure:"timeout_check"`
 
 	DbCache *dbCache `mapstructure:"db_cache"`
-
-	Queue *queue `mapstructure:"queue"`
-
-	GrpcClients []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
 }
 
 func NewEnv(env any) {
