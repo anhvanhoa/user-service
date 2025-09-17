@@ -2,9 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
-	"reflect"
-	"strings"
 	"user-service/domain/entity"
 	"user-service/domain/repository"
 
@@ -40,41 +37,8 @@ func (ur *userRepository) CheckUserExist(val string) (bool, error) {
 }
 
 func (ur *userRepository) UpdateUser(id string, user entity.User) (entity.UserInfor, error) {
-	var setClauses []string
-	var params []any
-
-	v := reflect.ValueOf(user)
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-	t := v.Type()
-
-	for i := 0; i < v.NumField(); i++ {
-		field := t.Field(i)
-		value := v.Field(i)
-
-		if field.Name == "ID" || field.Name == "CreatedAt" {
-			continue
-		}
-
-		if !value.IsZero() {
-			columnName := field.Tag.Get("pg")
-			setClauses = append(setClauses, fmt.Sprintf("%s = ?", columnName))
-			params = append(params, value.Interface())
-		}
-	}
-
-	if len(setClauses) == 0 {
-		return user.GetInfor(), nil
-	}
-
-	setQuery := strings.Join(setClauses, ", ")
-
-	if _, err := ur.db.Model(&user).Where("id = ?", id).Set(setQuery, params...).Update(); err != nil {
-		return entity.UserInfor{}, err
-	}
-
-	return user.GetInfor(), nil
+	_, err := ur.db.Model(&user).Where("id = ?", id).UpdateNotZero(&user)
+	return user.GetInfor(), err
 }
 
 func (ur *userRepository) GetUserByID(id string) (entity.User, error) {
@@ -90,7 +54,7 @@ func (ur *userRepository) GetUserByEmail(email string) (entity.User, error) {
 }
 
 func (ur *userRepository) UpdateUserByEmail(email string, user entity.User) (bool, error) {
-	r, err := ur.db.Model(&user).Where("email = ?", email).Update(&user)
+	r, err := ur.db.Model(&user).Where("email = ?", email).UpdateNotZero(&user)
 	return r.RowsAffected() != -1, err
 }
 

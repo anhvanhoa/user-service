@@ -1,7 +1,6 @@
 package user
 
 import (
-	"time"
 	"user-service/domain/entity"
 	"user-service/domain/repository"
 )
@@ -23,9 +22,6 @@ func NewUpdateUserUsecase(userRepo repository.UserRepository, userRoleRepo repos
 }
 
 func (u *updateUserUsecase) Excute(id string, data entity.User, roleIDs []string) (entity.UserInfor, error) {
-	now := time.Now()
-	data.UpdatedAt = &now
-
 	userInfo, err := u.userRepo.UpdateUser(id, data)
 	if err != nil {
 		return entity.UserInfor{}, err

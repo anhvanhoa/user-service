@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -58,17 +57,11 @@ func (c *GRPCClient) TestGetUserById() {
 	userIDStr, _ := reader.ReadString('\n')
 	userIDStr = strings.TrimSpace(userIDStr)
 
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid user ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.userClient.GetUserById(ctx, &proto_user.GetUserByIdRequest{
-		Id: strconv.FormatInt(userID, 10),
+		Id: userIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling GetUserById: %v\n", err)
@@ -97,17 +90,11 @@ func (c *GRPCClient) TestDeleteUserById() {
 	userIDStr, _ := reader.ReadString('\n')
 	userIDStr = strings.TrimSpace(userIDStr)
 
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid user ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.userClient.DeleteUser(ctx, &proto_user.DeleteUserRequest{
-		Id: strconv.FormatInt(userID, 10),
+		Id: userIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling DeleteUserById: %v\n", err)
@@ -126,11 +113,6 @@ func (c *GRPCClient) TestUpdateUserById() {
 	fmt.Print("Enter user ID to update: ")
 	userIDStr, _ := reader.ReadString('\n')
 	userIDStr = strings.TrimSpace(userIDStr)
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid user ID: %v\n", err)
-		return
-	}
 
 	fmt.Print("Enter email: ")
 	email, _ := reader.ReadString('\n')
@@ -163,37 +145,34 @@ func (c *GRPCClient) TestUpdateUserById() {
 	fmt.Print("Enter birthday (YYYY-MM-DD): ")
 	birthdayStr, _ := reader.ReadString('\n')
 	birthdayStr = strings.TrimSpace(birthdayStr)
-	birthday, err := time.Parse("2006-01-02", birthdayStr)
-	if err != nil {
-		fmt.Printf("Invalid birthday format: %v\n", err)
-		return
-	}
 
 	fmt.Print("Enter role IDs (comma-separated): ")
 	roleIDsStr, _ := reader.ReadString('\n')
 	roleIDsStr = strings.TrimSpace(roleIDsStr)
-	var roleIDs []int64
+	var roleIDs []string
 	if roleIDsStr != "" {
 		roleIDParts := strings.Split(roleIDsStr, ",")
 		for _, part := range roleIDParts {
 			part = strings.TrimSpace(part)
-			if roleID, err := strconv.ParseInt(part, 10, 64); err == nil {
-				roleIDs = append(roleIDs, roleID)
-			}
+			roleIDs = append(roleIDs, part)
 		}
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Convert roleIDs to strings
-	var roleIDStrings []string
-	for _, roleID := range roleIDs {
-		roleIDStrings = append(roleIDStrings, strconv.FormatInt(roleID, 10))
+	var birthday *timestamppb.Timestamp
+	if birthdayStr != "" {
+		birthdayTime, err := time.Parse("2006-01-02", birthdayStr)
+		if err != nil {
+			fmt.Printf("Invalid birthday format: %v\n", err)
+			return
+		}
+		birthday = timestamppb.New(birthdayTime)
 	}
 
 	resp, err := c.userClient.UpdateUser(ctx, &proto_user.UpdateUserRequest{
-		Id:       strconv.FormatInt(userID, 10),
+		Id:       userIDStr,
 		Email:    email,
 		Phone:    phone,
 		FullName: fullName,
@@ -201,8 +180,8 @@ func (c *GRPCClient) TestUpdateUserById() {
 		Bio:      bio,
 		Address:  address,
 		Status:   status,
-		Birthday: timestamppb.New(birthday),
-		RoleIds:  roleIDStrings,
+		Birthday: birthday,
+		RoleIds:  roleIDs,
 	})
 	if err != nil {
 		fmt.Printf("Error calling UpdateUserById: %v\n", err)
@@ -254,24 +233,18 @@ func (c *GRPCClient) TestGetSessionsByUserId() {
 	userIDStr, _ := reader.ReadString('\n')
 	userIDStr = strings.TrimSpace(userIDStr)
 
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid user ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.sessionClient.GetSessionsByUserId(ctx, &proto_session.GetSessionsByUserIdRequest{
-		UserId: strconv.FormatInt(userID, 10),
+		UserId: userIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling GetSessionsByUserId: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Found %d sessions for user %d:\n", len(resp.Sessions), userID)
+	fmt.Printf("Found %d sessions for user %s:\n", len(resp.Sessions), userIDStr)
 	for i, session := range resp.Sessions {
 		fmt.Printf("Session %d:\n", i+1)
 		fmt.Printf("  Token: %s\n", session.Token)
@@ -324,18 +297,12 @@ func (c *GRPCClient) TestDeleteSessionByTypeAndUser() {
 	userIDStr, _ := reader.ReadString('\n')
 	userIDStr = strings.TrimSpace(userIDStr)
 
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid user ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.sessionClient.DeleteSessionByTypeAndUser(ctx, &proto_session.DeleteSessionByTypeAndUserRequest{
 		Type:   sessionType,
-		UserId: strconv.FormatInt(userID, 10),
+		UserId: userIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling DeleteSessionByTypeAndUser: %v\n", err)
@@ -392,17 +359,11 @@ func (c *GRPCClient) TestGetRoleById() {
 	roleIDStr, _ := reader.ReadString('\n')
 	roleIDStr = strings.TrimSpace(roleIDStr)
 
-	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid role ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.GetRoleById(ctx, &proto_role.GetRoleByIdRequest{
-		Id: strconv.FormatInt(roleID, 10),
+		Id: roleIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling GetRoleById: %v\n", err)
@@ -437,6 +398,7 @@ func (c *GRPCClient) TestCreateRole() {
 		Name:        name,
 		Description: description,
 		Variant:     variant,
+		Status:      "active",
 	})
 	if err != nil {
 		fmt.Printf("Error calling CreateRole: %v\n", err)
@@ -455,12 +417,6 @@ func (c *GRPCClient) TestUpdateRole() {
 	roleIDStr, _ := reader.ReadString('\n')
 	roleIDStr = strings.TrimSpace(roleIDStr)
 
-	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid role ID: %v\n", err)
-		return
-	}
-
 	fmt.Print("Enter new role name: ")
 	name, _ := reader.ReadString('\n')
 	name = strings.TrimSpace(name)
@@ -477,7 +433,7 @@ func (c *GRPCClient) TestUpdateRole() {
 	defer cancel()
 
 	resp, err := c.roleClient.UpdateRole(ctx, &proto_role.UpdateRoleRequest{
-		Id:          strconv.FormatInt(roleID, 10),
+		Id:          roleIDStr,
 		Name:        name,
 		Description: description,
 		Variant:     variant,
@@ -500,17 +456,11 @@ func (c *GRPCClient) TestDeleteRole() {
 	roleIDStr, _ := reader.ReadString('\n')
 	roleIDStr = strings.TrimSpace(roleIDStr)
 
-	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
-	if err != nil {
-		fmt.Printf("Invalid role ID: %v\n", err)
-		return
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.DeleteRole(ctx, &proto_role.DeleteRoleRequest{
-		Id: strconv.FormatInt(roleID, 10),
+		Id: roleIDStr,
 	})
 	if err != nil {
 		fmt.Printf("Error calling DeleteRole: %v\n", err)

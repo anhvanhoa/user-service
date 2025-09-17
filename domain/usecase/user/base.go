@@ -18,7 +18,12 @@ type userUsecase struct {
 	updateUserRolesUsecase UpdateUserRolesUsecase
 }
 
-func NewUserUsecase(deleteUserUsecase DeleteUserUsecase, getUserUsecase GetUserUsecase, updateUserUsecase UpdateUserUsecase, updateUserRolesUsecase UpdateUserRolesUsecase) UserUsecaseI {
+func NewUserUsecase(
+	deleteUserUsecase DeleteUserUsecase,
+	getUserUsecase GetUserUsecase,
+	updateUserUsecase UpdateUserUsecase,
+	updateUserRolesUsecase UpdateUserRolesUsecase,
+) UserUsecaseI {
 	return &userUsecase{
 		deleteUserUsecase:      deleteUserUsecase,
 		getUserUsecase:         getUserUsecase,

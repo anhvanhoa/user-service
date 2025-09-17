@@ -3,8 +3,8 @@ module user-service
 go 1.24.6
 
 require (
-	github.com/anhvanhoa/service-core v0.0.0-20250903033254-16d20b840cca
-	github.com/anhvanhoa/sf-proto v1.1.6-0.20250905034142-c5e3ac6007b7
+	github.com/anhvanhoa/service-core v0.0.0-20250910183625-7c57c174c2a8
+	github.com/anhvanhoa/sf-proto v1.1.6-0.20250917083129-a8f9bbd7b58c
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.75.0

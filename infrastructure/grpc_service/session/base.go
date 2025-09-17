@@ -13,7 +13,7 @@ import (
 )
 
 type sessionServer struct {
-	proto_session.UnimplementedSessionServiceServer
+	proto_session.UnsafeSessionServiceServer
 	sessionUsecase session.SessionUsecaseI
 }
 
@@ -28,18 +28,40 @@ func NewSessionServer(
 		session.NewDeleteSessionByTypeAndTokenUsecase(sessionRepo, cache),
 		session.NewDeleteSessionByTypeAndUserUsecase(sessionRepo, cache),
 		session.NewDeleteSessionExpiredUsecase(sessionRepo),
+		session.NewGetSessionsByTypeUsecase(sessionRepo),
 	)
 	return &sessionServer{
 		sessionUsecase: sessionUC,
 	}
 }
 
-func (s *sessionServer) GetSessions(ctx context.Context, req *proto_session.GetAllSessionsRequest) (*proto_session.GetAllSessionsResponse, error) {
+func (s *sessionServer) DeleteSessionForgot(ctx context.Context, req *proto_session.DeleteSessionForgotRequest) (*proto_session.DeleteSessionForgotResponse, error) {
+	err := s.sessionUsecase.DeleteSessionByTypeAndUser(ctx, entity.SessionTypeForgot, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return &proto_session.DeleteSessionForgotResponse{
+		Message: "Delete session forgot successfully",
+		Success: true,
+	}, nil
+}
+
+func (s *sessionServer) GetAllSessions(ctx context.Context, req *proto_session.GetAllSessionsRequest) (*proto_session.GetAllSessionsResponse, error) {
 	sessions, err := s.sessionUsecase.GetSessions(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &proto_session.GetAllSessionsResponse{
+		Sessions: s.createProtoSessions(sessions),
+	}, nil
+}
+
+func (s *sessionServer) GetSessionsByType(ctx context.Context, req *proto_session.GetSessionsByTypeRequest) (*proto_session.GetSessionsByTypeResponse, error) {
+	sessions, err := s.sessionUsecase.GetSessionsByType(ctx, entity.SessionType(req.Type))
+	if err != nil {
+		return nil, err
+	}
+	return &proto_session.GetSessionsByTypeResponse{
 		Sessions: s.createProtoSessions(sessions),
 	}, nil
 }

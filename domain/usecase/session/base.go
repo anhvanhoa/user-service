@@ -11,6 +11,7 @@ type SessionUsecaseI interface {
 	DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error
 	DeleteSessionByTypeAndUser(ctx context.Context, sessionType entity.SessionType, userID string) error
 	DeleteSessionExpired(ctx context.Context) error
+	GetSessionsByType(ctx context.Context, sessionType entity.SessionType) ([]entity.Session, error)
 }
 
 type sessionUsecase struct {
@@ -19,6 +20,7 @@ type sessionUsecase struct {
 	deleteSessionByTypeAndTokenUsecase DeleteSessionByTypeAndTokenUsecase
 	deleteSessionByTypeAndUserUsecase  DeleteSessionByTypeAndUserUsecase
 	deleteSessionExpiredUsecase        DeleteSessionExpiredUsecase
+	getSessionsByTypeUsecase           GetSessionsByTypeUsecase
 }
 
 func NewSessionUsecase(
@@ -27,6 +29,7 @@ func NewSessionUsecase(
 	deleteSessionByTypeAndTokenUsecase DeleteSessionByTypeAndTokenUsecase,
 	deleteSessionByTypeAndUserUsecase DeleteSessionByTypeAndUserUsecase,
 	deleteSessionExpiredUsecase DeleteSessionExpiredUsecase,
+	getSessionsByTypeUsecase GetSessionsByTypeUsecase,
 ) SessionUsecaseI {
 	return &sessionUsecase{
 		getSessionsUsecase:                 getSessionsUsecase,
@@ -34,6 +37,7 @@ func NewSessionUsecase(
 		deleteSessionByTypeAndTokenUsecase: deleteSessionByTypeAndTokenUsecase,
 		deleteSessionByTypeAndUserUsecase:  deleteSessionByTypeAndUserUsecase,
 		deleteSessionExpiredUsecase:        deleteSessionExpiredUsecase,
+		getSessionsByTypeUsecase:           getSessionsByTypeUsecase,
 	}
 }
 
@@ -55,4 +59,8 @@ func (s *sessionUsecase) DeleteSessionByTypeAndUser(ctx context.Context, session
 
 func (s *sessionUsecase) DeleteSessionExpired(ctx context.Context) error {
 	return s.deleteSessionExpiredUsecase.Excute(ctx)
+}
+
+func (s *sessionUsecase) GetSessionsByType(ctx context.Context, sessionType entity.SessionType) ([]entity.Session, error) {
+	return s.getSessionsByTypeUsecase.Excute(ctx, sessionType)
 }
