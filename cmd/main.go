@@ -4,7 +4,6 @@ import (
 	"context"
 	"user-service/bootstrap"
 	grpcservice "user-service/infrastructure/grpc_service"
-	role_server "user-service/infrastructure/grpc_service/role"
 	session_server "user-service/infrastructure/grpc_service/session"
 	user_server "user-service/infrastructure/grpc_service/user"
 
@@ -32,8 +31,7 @@ func main() {
 	defer discoveryClient.Close(env.NameService)
 	userService := user_server.NewUserServer(db)
 	sessionService := session_server.NewSessionServer(db, cache)
-	roleService := role_server.NewRoleServer(db)
-	grpcSrv := grpcservice.NewGRPCServer(env, log, userService, sessionService, roleService)
+	grpcSrv := grpcservice.NewGRPCServer(env, log, userService, sessionService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {
