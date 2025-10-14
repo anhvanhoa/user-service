@@ -9,22 +9,25 @@ import (
 	"strings"
 	"time"
 
-	proto_role "github.com/anhvanhoa/sf-proto/gen/role/v1"
 	proto_session "github.com/anhvanhoa/sf-proto/gen/session/v1"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const (
-	serverAddress = "localhost:50050" // Default gRPC server address
-)
+var serverAddress string
+
+func init() {
+	viper.SetConfigFile("dev.config.yaml")
+	viper.ReadInConfig()
+	serverAddress = fmt.Sprintf("%s:%s", viper.GetString("host_grpc"), viper.GetString("port_grpc"))
+}
 
 type GRPCClient struct {
 	userClient    proto_user.UserServiceClient
 	sessionClient proto_session.SessionServiceClient
-	roleClient    proto_role.RoleServiceClient
 	conn          *grpc.ClientConn
 }
 
@@ -37,7 +40,6 @@ func NewGRPCClient(address string) (*GRPCClient, error) {
 	return &GRPCClient{
 		userClient:    proto_user.NewUserServiceClient(conn),
 		sessionClient: proto_session.NewSessionServiceClient(conn),
-		roleClient:    proto_role.NewRoleServiceClient(conn),
 		conn:          conn,
 	}, nil
 }
@@ -329,148 +331,6 @@ func (c *GRPCClient) TestDeleteSessionExpired() {
 	fmt.Printf("Success: %t\n", resp.Success)
 }
 
-// Role Service Tests
-func (c *GRPCClient) TestGetAllRoles() {
-	fmt.Println("\n=== Test GetAllRoles ===")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.roleClient.GetAllRoles(ctx, &proto_role.GetAllRolesRequest{})
-	if err != nil {
-		fmt.Printf("Error calling GetAllRoles: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Found %d roles:\n", len(resp.Roles))
-	for i, role := range resp.Roles {
-		fmt.Printf("Role %d:\n", i+1)
-		fmt.Printf("  ID: %s\n", role.Id)
-		fmt.Printf("  Name: %s\n", role.Name)
-		fmt.Println()
-	}
-}
-
-func (c *GRPCClient) TestGetRoleById() {
-	fmt.Println("\n=== Test GetRoleById ===")
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter role ID: ")
-	roleIDStr, _ := reader.ReadString('\n')
-	roleIDStr = strings.TrimSpace(roleIDStr)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.roleClient.GetRoleById(ctx, &proto_role.GetRoleByIdRequest{
-		Id: roleIDStr,
-	})
-	if err != nil {
-		fmt.Printf("Error calling GetRoleById: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Role found:\n")
-	fmt.Printf("ID: %s\n", resp.Role.Id)
-	fmt.Printf("Name: %s\n", resp.Role.Name)
-}
-
-func (c *GRPCClient) TestCreateRole() {
-	fmt.Println("\n=== Test CreateRole ===")
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter role name: ")
-	name, _ := reader.ReadString('\n')
-	name = strings.TrimSpace(name)
-
-	fmt.Print("Enter role description: ")
-	description, _ := reader.ReadString('\n')
-	description = strings.TrimSpace(description)
-
-	fmt.Print("Enter role variant: ")
-	variant, _ := reader.ReadString('\n')
-	variant = strings.TrimSpace(variant)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.roleClient.CreateRole(ctx, &proto_role.CreateRoleRequest{
-		Name:        name,
-		Description: description,
-		Variant:     variant,
-		Status:      "active",
-	})
-	if err != nil {
-		fmt.Printf("Error calling CreateRole: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Create result: %s\n", resp.Message)
-	fmt.Printf("Success: %t\n", resp.Success)
-}
-
-func (c *GRPCClient) TestUpdateRole() {
-	fmt.Println("\n=== Test UpdateRole ===")
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter role ID to update: ")
-	roleIDStr, _ := reader.ReadString('\n')
-	roleIDStr = strings.TrimSpace(roleIDStr)
-
-	fmt.Print("Enter new role name: ")
-	name, _ := reader.ReadString('\n')
-	name = strings.TrimSpace(name)
-
-	fmt.Print("Enter new role description: ")
-	description, _ := reader.ReadString('\n')
-	description = strings.TrimSpace(description)
-
-	fmt.Print("Enter new role variant: ")
-	variant, _ := reader.ReadString('\n')
-	variant = strings.TrimSpace(variant)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.roleClient.UpdateRole(ctx, &proto_role.UpdateRoleRequest{
-		Id:          roleIDStr,
-		Name:        name,
-		Description: description,
-		Variant:     variant,
-	})
-	if err != nil {
-		fmt.Printf("Error calling UpdateRole: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Role updated successfully:\n")
-	fmt.Printf("ID: %s\n", resp.Role.Id)
-	fmt.Printf("Name: %s\n", resp.Role.Name)
-}
-
-func (c *GRPCClient) TestDeleteRole() {
-	fmt.Println("\n=== Test DeleteRole ===")
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter role ID to delete: ")
-	roleIDStr, _ := reader.ReadString('\n')
-	roleIDStr = strings.TrimSpace(roleIDStr)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.roleClient.DeleteRole(ctx, &proto_role.DeleteRoleRequest{
-		Id: roleIDStr,
-	})
-	if err != nil {
-		fmt.Printf("Error calling DeleteRole: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Delete result: %s\n", resp.Message)
-	fmt.Printf("Success: %t\n", resp.Success)
-}
-
 func printMenu() {
 	fmt.Println("\n=== gRPC User Service Test Client ===")
 	fmt.Println("1. User Service Tests")
@@ -483,12 +343,6 @@ func printMenu() {
 	fmt.Println("  2.3 Delete Session By Type And Token")
 	fmt.Println("  2.4 Delete Session By Type And User")
 	fmt.Println("  2.5 Delete Session Expired")
-	fmt.Println("3. Role Service Tests")
-	fmt.Println("  3.1 Get All Roles")
-	fmt.Println("  3.2 Get Role By ID")
-	fmt.Println("  3.3 Create Role")
-	fmt.Println("  3.4 Update Role")
-	fmt.Println("  3.5 Delete Role")
 	fmt.Println("0. Exit")
 	fmt.Print("Enter your choice: ")
 }
@@ -533,16 +387,6 @@ func main() {
 			client.TestDeleteSessionByTypeAndUser()
 		case "2.5":
 			client.TestDeleteSessionExpired()
-		case "3.1":
-			client.TestGetAllRoles()
-		case "3.2":
-			client.TestGetRoleById()
-		case "3.3":
-			client.TestCreateRole()
-		case "3.4":
-			client.TestUpdateRole()
-		case "3.5":
-			client.TestDeleteRole()
 		case "0":
 			fmt.Println("Goodbye!")
 			return
