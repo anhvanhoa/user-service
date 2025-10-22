@@ -1,5 +1,5 @@
 node_env: development
-url_db: postgres://pg:123456@localhost:5432/user_service_db?sslmode=disable
+url_db: postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable
 name_service: UserService
 port_grpc: 50050
 host_grpc: localhost
@@ -14,3 +14,13 @@ db_cache:
   max_active: 10
   idle_timeout: 10
   network: tcp
+
+grpc_clients:
+    - Name: 'PermissionService'
+      ServerAddress: 'localhost:50051'
+      MaxRetries: 3
+      Time: 20
+      Timeout: 15
+      PermitWithoutStream: true
+
+permission_service_addr: 'localhost:50051'

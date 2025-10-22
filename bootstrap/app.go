@@ -4,15 +4,17 @@ import (
 	"github.com/anhvanhoa/service-core/bootstrap/db"
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
+	"github.com/anhvanhoa/service-core/utils"
 	"github.com/go-pg/pg/v10"
 	"go.uber.org/zap/zapcore"
 )
 
 type Application struct {
-	Env   *Env
-	DB    *pg.DB
-	Log   *log.LogGRPCImpl
-	Cache cache.CacheI
+	Env    *Env
+	DB     *pg.DB
+	Log    *log.LogGRPCImpl
+	Cache  cache.CacheI
+	Helper utils.Helper
 }
 
 func App() *Application {
@@ -34,10 +36,12 @@ func App() *Application {
 		env.DbCache.IdleTimeout,
 	)
 	cache := cache.NewCache(configRedis)
+	helper := utils.NewHelper()
 	return &Application{
-		Env:   &env,
-		DB:    db,
-		Log:   log,
-		Cache: cache,
+		Env:    &env,
+		DB:     db,
+		Log:    log,
+		Cache:  cache,
+		Helper: helper,
 	}
 }

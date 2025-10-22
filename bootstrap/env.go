@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/anhvanhoa/service-core/bootstrap/config"
+	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
 type dbCache struct {
@@ -28,12 +29,16 @@ type Env struct {
 	TimeoutCheck  string `mapstructure:"timeout_check"`
 
 	DbCache *dbCache `mapstructure:"db_cache"`
+
+	PermissionServiceAddr string `mapstructure:"permission_service_addr"`
+
+	GrpcClients []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
 }
 
 func NewEnv(env any) {
 	setting := config.DefaultSettingsConfig()
 	if setting.IsProduction() {
-		setting.SetFile("prod.config")
+		setting.SetFile("user_service.config")
 	} else {
 		setting.SetFile("dev.config")
 	}
