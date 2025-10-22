@@ -25,12 +25,10 @@ type userServer struct {
 
 func NewUserServer(db *pg.DB) proto_user.UserServiceServer {
 	userRepo := repo.NewUserRepository(db)
-	userRoleRepo := repo.NewUserRoleRepository(db)
 	userUC := user.NewUserUsecase(
 		user.NewDeleteUserUsecase(userRepo),
 		user.NewGetUserUsecase(userRepo),
-		user.NewUpdateUserUsecase(userRepo, userRoleRepo),
-		user.NewUpdateUserRolesUsecase(userRoleRepo),
+		user.NewUpdateUserUsecase(userRepo),
 	)
 	return &userServer{
 		userUsecase: userUC,
@@ -60,7 +58,7 @@ func (s *userServer) DeleteUser(ctx context.Context, req *proto_user.DeleteUserR
 
 func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserRequest) (*proto_user.UpdateUserResponse, error) {
 	user := s.createEntityUser(req)
-	updatedUser, err := s.userUsecase.UpdateUserById(req.Id, user, req.RoleIds)
+	updatedUser, err := s.userUsecase.UpdateUserById(req.Id, user)
 	if err != nil {
 		return nil, err
 	}

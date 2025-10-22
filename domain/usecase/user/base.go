@@ -7,28 +7,24 @@ import (
 type UserUsecaseI interface {
 	GetUserById(id string) (entity.User, error)
 	DeleteUserById(id string) error
-	UpdateUserById(id string, data entity.User, roleIDs []string) (entity.UserInfor, error)
-	UpdateUserRolesById(id string, roleIDs []string) error
+	UpdateUserById(id string, data entity.User) (entity.UserInfor, error)
 }
 
 type userUsecase struct {
-	deleteUserUsecase      DeleteUserUsecase
-	getUserUsecase         GetUserUsecase
-	updateUserUsecase      UpdateUserUsecase
-	updateUserRolesUsecase UpdateUserRolesUsecase
+	deleteUserUsecase DeleteUserUsecase
+	getUserUsecase    GetUserUsecase
+	updateUserUsecase UpdateUserUsecase
 }
 
 func NewUserUsecase(
 	deleteUserUsecase DeleteUserUsecase,
 	getUserUsecase GetUserUsecase,
 	updateUserUsecase UpdateUserUsecase,
-	updateUserRolesUsecase UpdateUserRolesUsecase,
 ) UserUsecaseI {
 	return &userUsecase{
-		deleteUserUsecase:      deleteUserUsecase,
-		getUserUsecase:         getUserUsecase,
-		updateUserUsecase:      updateUserUsecase,
-		updateUserRolesUsecase: updateUserRolesUsecase,
+		deleteUserUsecase: deleteUserUsecase,
+		getUserUsecase:    getUserUsecase,
+		updateUserUsecase: updateUserUsecase,
 	}
 }
 
@@ -40,10 +36,6 @@ func (u *userUsecase) DeleteUserById(id string) error {
 	return u.deleteUserUsecase.Excute(id)
 }
 
-func (u *userUsecase) UpdateUserById(id string, data entity.User, roleIDs []string) (entity.UserInfor, error) {
-	return u.updateUserUsecase.Excute(id, data, roleIDs)
-}
-
-func (u *userUsecase) UpdateUserRolesById(id string, roleIDs []string) error {
-	return u.updateUserRolesUsecase.Excute(id, roleIDs)
+func (u *userUsecase) UpdateUserById(id string, data entity.User) (entity.UserInfor, error) {
+	return u.updateUserUsecase.Excute(id, data)
 }

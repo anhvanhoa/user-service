@@ -6,32 +6,23 @@ import (
 )
 
 type UpdateUserUsecase interface {
-	Excute(id string, data entity.User, roleIDs []string) (entity.UserInfor, error)
+	Excute(id string, data entity.User) (entity.UserInfor, error)
 }
 
 type updateUserUsecase struct {
-	userRepo     repository.UserRepository
-	userRoleRepo repository.UserRoleRepository
+	userRepo repository.UserRepository
 }
 
-func NewUpdateUserUsecase(userRepo repository.UserRepository, userRoleRepo repository.UserRoleRepository) UpdateUserUsecase {
+func NewUpdateUserUsecase(userRepo repository.UserRepository) UpdateUserUsecase {
 	return &updateUserUsecase{
-		userRepo:     userRepo,
-		userRoleRepo: userRoleRepo,
+		userRepo: userRepo,
 	}
 }
 
-func (u *updateUserUsecase) Excute(id string, data entity.User, roleIDs []string) (entity.UserInfor, error) {
+func (u *updateUserUsecase) Excute(id string, data entity.User) (entity.UserInfor, error) {
 	userInfo, err := u.userRepo.UpdateUser(id, data)
 	if err != nil {
 		return entity.UserInfor{}, err
-	}
-
-	if len(roleIDs) > 0 {
-		err = u.userRoleRepo.UpdateUserRoles(id, roleIDs)
-		if err != nil {
-			return entity.UserInfor{}, err
-		}
 	}
 
 	return userInfo, nil
