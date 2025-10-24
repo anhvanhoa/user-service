@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: DockerFile
-      args:
-        - GITHUB_TOKEN=${GITHUB_TOKEN}
+      secrets:
+        - github_token
     image: user-service:latest
     container_name: user_service_app
     ports:
@@ -23,6 +23,10 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+secrets:
+  github_token:
+    file: ./github_token.txt
 
 networks:
   sf_network:

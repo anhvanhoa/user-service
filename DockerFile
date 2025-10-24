@@ -11,10 +11,11 @@ RUN apk add --no-cache git ca-certificates
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:" && \
     git config --global url."https://".insteadOf "git://"
 
-# Set up authentication for private repositories
-# Note: You'll need to pass GITHUB_TOKEN as build arg
-ARG GITHUB_TOKEN
-RUN if [ -n "$GITHUB_TOKEN" ]; then \
+# Set up authentication for private repositories using BuildKit secrets
+# Note: Use --secret id=github_token,src=<token_file> when building
+RUN --mount=type=secret,id=github_token \
+    if [ -f /run/secrets/github_token ]; then \
+        GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
         echo "machine github.com login $GITHUB_TOKEN password x-oauth-basic" > ~/.netrc && \
         chmod 600 ~/.netrc; \
     fi
