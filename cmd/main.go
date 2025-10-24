@@ -9,8 +9,6 @@ import (
 	user_server "user-service/infrastructure/grpc_service/user"
 
 	gc "github.com/anhvanhoa/service-core/domain/grpc_client"
-
-	"github.com/anhvanhoa/service-core/domain/discovery"
 )
 
 func main() {
@@ -19,19 +17,6 @@ func main() {
 	log := app.Log
 	db := app.DB
 	cache := app.Cache
-	discoveryConfig := discovery.DiscoveryConfig{
-		ServiceName:   env.NameService,
-		ServicePort:   env.PortGrpc,
-		ServiceHost:   env.HostGrpc,
-		IntervalCheck: env.IntervalCheck,
-		TimeoutCheck:  env.TimeoutCheck,
-	}
-	discoveryClient, err := discovery.NewDiscovery(&discoveryConfig)
-	if err != nil {
-		log.Fatal("Failed to create discovery client: " + err.Error())
-	}
-	discoveryClient.Register()
-	defer discoveryClient.Close(env.NameService)
 
 	clientFactory := gc.NewClientFactory(env.GrpcClients...)
 	client := clientFactory.GetClient(env.PermissionServiceAddr)
