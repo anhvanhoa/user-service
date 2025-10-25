@@ -2,7 +2,7 @@ node_env: development
 secret_service: UserServiceSecret 
 url_db: postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable
 name_service: UserService
-port_grpc: 50053
+port_grpc: 40053
 host_grpc: localhost
 interval_check: 10s
 timeout_check: 10s
