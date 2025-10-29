@@ -4,10 +4,10 @@ buf.build/go/protovalidate v0.14.0 h1:kr/rC/no+DtRyYX+8KXLDxNnI1rINz0imk5K44ZpZ3
 buf.build/go/protovalidate v0.14.0/go.mod h1:+F/oISho9MO7gJQNYC2VWLzcO1fTPmaTA08SDYJZncA=
 cel.dev/expr v0.24.0 h1:56OvJKSH3hDGL0ml5uSxZmz3/3Pq4tJ+fb1unVLAFcY=
 cel.dev/expr v0.24.0/go.mod h1:hLPLo1W4QUmuYdA72RBX06QTs6MXw941piREPl3Yfiw=
-github.com/anhvanhoa/service-core v0.0.0-20251024035606-4413ee8a0db8 h1:r5Rp1GtQt151UGVSBGVEA1kN+5yN8oK0yVd5KUWmKFs=
-github.com/anhvanhoa/service-core v0.0.0-20251024035606-4413ee8a0db8/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
-github.com/anhvanhoa/sf-proto v0.0.0-20251021093736-e2719d3e1c04 h1:f/gkiHx7eDBZqvyk658tFuvXNAay5Hj4v2vP7wMSf1g=
-github.com/anhvanhoa/sf-proto v0.0.0-20251021093736-e2719d3e1c04/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130 h1:KyF9G1+8S0cMSrXQ5fZ2swsa1rt51hkvDLtu7k5V8pg=
+github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
+github.com/anhvanhoa/sf-proto v0.0.0-20251029045801-09ef1c1e3959 h1:Fe9GB0vxMT7+SpPn2Quq3EkVkac9zg/322Ot+p/CEBs=
+github.com/anhvanhoa/sf-proto v0.0.0-20251029045801-09ef1c1e3959/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
@@ -39,6 +39,8 @@ github.com/go-pg/zerochecker v0.2.0/go.mod h1:NJZ4wKL0NmTtz0GKCoJ8kym6Xn/EQzXRl2
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
 github.com/go-viper/mapstructure/v2 v2.4.0 h1:EBsztssimR/CONLSZZ04E8qAkxNYq4Qp9LvH92wZUgs=
 github.com/go-viper/mapstructure/v2 v2.4.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
+github.com/golang-jwt/jwt/v5 v5.3.0 h1:pv4AsKCKKZuqlgs5sUmn4x8UlGa0kEVt/puTpKx9vvo=
+github.com/golang-jwt/jwt/v5 v5.3.0/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.4.0-rc.1/go.mod h1:ceaxUfeHdC40wWswd/P6IGgMaK3YpKi5j83Wpe3EHw8=
 github.com/golang/protobuf v1.4.0-rc.1.0.20200221234624-67d41d38c208/go.mod h1:xKAWHe0F5eneWXFV3EuXVDTCmh+JuBKY0li0aMyXATA=

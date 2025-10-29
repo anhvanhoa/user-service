@@ -20,6 +20,7 @@ type dbCache struct {
 type Env struct {
 	NodeEnv               string                    `mapstructure:"node_env"`
 	SecretService         string                    `mapstructure:"secret_service"`
+	AccessSecret          string                    `mapstructure:"access_secret"`
 	UrlDb                 string                    `mapstructure:"url_db"`
 	NameService           string                    `mapstructure:"name_service"`
 	PortGrpc              int                       `mapstructure:"port_grpc"`

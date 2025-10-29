@@ -24,7 +24,7 @@ func main() {
 
 	userService := user_server.NewUserServer(db)
 	sessionService := session_server.NewSessionServer(db, cache)
-	grpcSrv := grpcservice.NewGRPCServer(env, log, userService, sessionService)
+	grpcSrv := grpcservice.NewGRPCServer(env, log, cache, userService, sessionService)
 	ctx, cancel := context.WithCancel(context.Background())
 	permissions := app.Helper.ConvertResourcesToPermissions(grpcSrv.GetResources())
 	if _, err := permissionClient.PermissionServiceClient.RegisterPermission(ctx, permissions); err != nil {

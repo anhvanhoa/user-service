@@ -1,5 +1,6 @@
 node_env: development
 secret_service: UserServiceSecret 
+access_secret: "your-access-jwt-secret-here"
 url_db: postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable
 name_service: UserService
 port_grpc: 40053
