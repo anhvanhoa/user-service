@@ -9,7 +9,7 @@ import (
 )
 
 type GetUsersUsecase interface {
-	Excute(pagination *common.Pagination, filter *entity.FilterUser) (common.PaginationResult[entity.User], error)
+	Excute(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error)
 }
 
 type getUsersUsecase struct {
@@ -24,13 +24,13 @@ func NewGetUsersUsecase(userRepo repository.UserRepository, helper utils.Helper)
 	}
 }
 
-func (g *getUsersUsecase) Excute(pagination *common.Pagination, filter *entity.FilterUser) (common.PaginationResult[entity.User], error) {
+func (g *getUsersUsecase) Excute(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error) {
 	users, total, err := g.userRepo.GetUsers(pagination, filter)
 	if err != nil {
-		return common.PaginationResult[entity.User]{}, err
+		return nil, ErrGetUsers
 	}
 	totalPages := g.helper.CalculateTotalPages(int64(total), int64(pagination.PageSize))
-	return common.PaginationResult[entity.User]{
+	return &common.PaginationResult[entity.User]{
 		Data:       users,
 		Total:      int64(total),
 		Page:       pagination.Page,

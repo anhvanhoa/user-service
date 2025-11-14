@@ -8,6 +8,8 @@ import (
 	"github.com/anhvanhoa/service-core/common"
 	common_proto "github.com/anhvanhoa/sf-proto/gen/common/v1"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *userServer) GetUsers(ctx context.Context, req *proto_user.GetUsersRequest) (*proto_user.GetUsersResponse, error) {
@@ -15,7 +17,7 @@ func (s *userServer) GetUsers(ctx context.Context, req *proto_user.GetUsersReque
 	filter := s.convertFilter(req.Filter)
 	result, err := s.userUsecase.GetUsers(pagination, filter)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &proto_user.GetUsersResponse{
 		Users: s.createProtoUsers(result.Data),

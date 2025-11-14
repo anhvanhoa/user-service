@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 	"user-service/constants"
 	"user-service/domain/entity"
 	"user-service/domain/repository"
@@ -76,10 +77,11 @@ func (ur *userRepository) GetUsers(pagination *common.Pagination, filter *entity
 			query = query.Where("full_name ILIKE ? OR email ILIKE ? OR phone ILIKE ? OR address ILIKE ? OR bio ILIKE ?", "%"+pagination.Search+"%", "%"+pagination.Search+"%", "%"+pagination.Search+"%", "%"+pagination.Search+"%", "%"+pagination.Search+"%")
 		}
 		if pagination.SortBy != "" {
-			query = query.Order(pagination.SortBy)
-		}
-		if pagination.SortOrder != "" {
-			query = query.Order(pagination.SortOrder)
+			sortOrder := "ASC"
+			if strings.EqualFold(pagination.SortOrder, "desc") {
+				sortOrder = "DESC"
+			}
+			query = query.Order(pagination.SortBy + " " + sortOrder)
 		}
 	}
 	total, err := query.Count()
