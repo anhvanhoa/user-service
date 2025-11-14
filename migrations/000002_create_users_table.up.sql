@@ -1,7 +1,7 @@
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_status') THEN
-        CREATE TYPE user_status AS ENUM ('active', 'inactive');
+        CREATE TYPE user_status AS ENUM ('active', 'inactive', 'deleted');
     END IF;
 END$$;
 
@@ -20,6 +20,7 @@ CREATE TABLE
         veryfied TIMESTAMP DEFAULT NULL,
         address VARCHAR(255),
         status user_status,
+        deleted_at TIMESTAMP DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

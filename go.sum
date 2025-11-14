@@ -8,6 +8,8 @@ github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130 h1:KyF9G1+8
 github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
 github.com/anhvanhoa/sf-proto v0.0.0-20251029045801-09ef1c1e3959 h1:Fe9GB0vxMT7+SpPn2Quq3EkVkac9zg/322Ot+p/CEBs=
 github.com/anhvanhoa/sf-proto v0.0.0-20251029045801-09ef1c1e3959/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251114182004-00ed2c713ca0 h1:zzSTp3mS82bkHbskZLWZ0+HQv2zrpKL/7Y8uzAe52/M=
+github.com/anhvanhoa/sf-proto v0.0.0-20251114182004-00ed2c713ca0/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=

@@ -8,7 +8,7 @@ import (
 	"user-service/domain/usecase/user"
 	"user-service/infrastructure/repo"
 
-	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/utils"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
 	"github.com/go-pg/pg/v10"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -23,11 +23,12 @@ type userServer struct {
 	userUsecase user.UserUsecaseI
 }
 
-func NewUserServer(db *pg.DB) proto_user.UserServiceServer {
-	userRepo := repo.NewUserRepository(db)
+func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer {
+	userRepo := repo.NewUserRepository(db, helper)
 	userUC := user.NewUserUsecase(
 		user.NewDeleteUserUsecase(userRepo),
 		user.NewGetUserUsecase(userRepo),
+		user.NewGetUsersUsecase(userRepo, helper),
 		user.NewUpdateUserUsecase(userRepo),
 	)
 	return &userServer{
@@ -76,6 +77,10 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 	if user.UpdatedAt != nil {
 		updatedAt = timestamppb.New(*user.UpdatedAt)
 	}
+	var deletedAt *timestamppb.Timestamp
+	if user.DeletedAt != nil {
+		deletedAt = timestamppb.New(*user.DeletedAt)
+	}
 	return &proto_user.User{
 		Id:        user.ID,
 		Email:     user.Email,
@@ -89,6 +94,7 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: updatedAt,
 		Birthday:  birthday,
+		DeletedAt: deletedAt,
 	}
 }
 
@@ -126,7 +132,7 @@ func (s *userServer) createEntityUser(req *proto_user.UpdateUserRequest) entity.
 		Avatar:   req.Avatar,
 		Bio:      req.Bio,
 		Address:  req.Address,
-		Status:   common.Status(req.Status),
+		Status:   entity.UserStatus(req.Status),
 		Birthday: birthday,
 	}
 }
