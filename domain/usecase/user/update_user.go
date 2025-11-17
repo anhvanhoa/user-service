@@ -6,7 +6,7 @@ import (
 )
 
 type UpdateUserUsecase interface {
-	Excute(id string, data entity.User) (entity.UserInfor, error)
+	Excute(id string, data *entity.User) (entity.UserInfor, error)
 }
 
 type updateUserUsecase struct {
@@ -19,10 +19,13 @@ func NewUpdateUserUsecase(userRepo repository.UserRepository) UpdateUserUsecase 
 	}
 }
 
-func (u *updateUserUsecase) Excute(id string, data entity.User) (entity.UserInfor, error) {
+func (u *updateUserUsecase) Excute(id string, data *entity.User) (entity.UserInfor, error) {
+	if data == nil {
+		return entity.UserInfor{}, ErrUpdateUser
+	}
 	userInfo, err := u.userRepo.UpdateUser(id, data)
 	if err != nil {
-		return entity.UserInfor{}, err
+		return entity.UserInfor{}, ErrUpdateUser
 	}
 
 	return userInfo, nil

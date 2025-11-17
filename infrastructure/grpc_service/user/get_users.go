@@ -2,7 +2,6 @@ package user_server
 
 import (
 	"context"
-	"time"
 	"user-service/domain/entity"
 
 	"github.com/anhvanhoa/service-core/common"
@@ -49,30 +48,24 @@ func (s *userServer) convertFilter(filter *proto_user.UserFilter) *entity.Filter
 	}
 	var filterResult entity.FilterUser
 	switch filter.Status {
-	case proto_user.UserStatus_ACTIVE:
+	case proto_user.UserStatus_active:
 		active := entity.UserStatus(string(entity.UserStatusActive))
 		filterResult.Status = &active
-	case proto_user.UserStatus_INACTIVE:
+	case proto_user.UserStatus_inactive:
 		inactive := entity.UserStatus(string(entity.UserStatusInactive))
 		filterResult.Status = &inactive
-	case proto_user.UserStatus_DELETED:
+	case proto_user.UserStatus_deleted:
 		deleted := entity.UserStatus(string(entity.UserStatusDeleted))
 		filterResult.Status = &deleted
 	default:
 		filterResult.Status = nil
 	}
 	if filter.FromDate != nil {
-		fromDate, err := time.Parse(time.RFC3339, filter.FromDate.String())
-		if err != nil {
-			return &filterResult
-		}
+		fromDate := filter.FromDate.AsTime()
 		filterResult.FromDate = &fromDate
 	}
 	if filter.ToDate != nil {
-		toDate, err := time.Parse(time.RFC3339, filter.ToDate.String())
-		if err != nil {
-			return &filterResult
-		}
+		toDate := filter.ToDate.AsTime()
 		filterResult.ToDate = &toDate
 	}
 	return &filterResult

@@ -165,7 +165,7 @@ func (c *GRPCClient) TestUpdateUserById() {
 
 	var birthday *timestamppb.Timestamp
 	if birthdayStr != "" {
-		birthdayTime, err := time.Parse("2006-01-02", birthdayStr)
+		birthdayTime, err := time.Parse(time.RFC3339, birthdayStr)
 		if err != nil {
 			fmt.Printf("Invalid birthday format: %v\n", err)
 			return

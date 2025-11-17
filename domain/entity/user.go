@@ -29,6 +29,7 @@ type User struct {
 	Birthday   *time.Time `pg:"birthday"`
 	DeletedAt  *time.Time `pg:"deleted_at"`
 	CreatedAt  time.Time  `pg:"created_at"`
+	IsSystem   bool       `pg:"is_system"`
 	UpdatedAt  *time.Time `pg:"updated_at"`
 }
 

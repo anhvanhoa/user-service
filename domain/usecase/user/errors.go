@@ -5,5 +5,8 @@ import (
 )
 
 var (
-	ErrGetUsers = oops.New("Không thể lấy danh sách người dùng")
+	ErrGetUsers          = oops.New("Không thể lấy danh sách người dùng")
+	ErrUpdateUser        = oops.New("Không thể cập nhật người dùng")
+	ErrCreateUser        = oops.New("Không thể tạo người dùng")
+	ErrUserAlreadyExists = oops.New("Người dùng đã tồn tại")
 )

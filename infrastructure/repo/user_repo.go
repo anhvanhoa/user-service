@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"strings"
+	"time"
 	"user-service/constants"
 	"user-service/domain/entity"
 	"user-service/domain/repository"
@@ -24,9 +25,9 @@ func NewUserRepository(db *pg.DB, helper utils.Helper) repository.UserRepository
 	}
 }
 
-func (ur *userRepository) CreateUser(user entity.User) (entity.UserInfor, error) {
+func (ur *userRepository) CreateUser(user entity.User) (entity.User, error) {
 	_, err := ur.db.Model(&user).Insert()
-	return user.GetInfor(), err
+	return user, err
 }
 
 func (ur *userRepository) GetUserByEmailOrPhone(val string) (entity.User, error) {
@@ -42,8 +43,8 @@ func (ur *userRepository) CheckUserExist(val string) (bool, error) {
 	return isExist, err
 }
 
-func (ur *userRepository) UpdateUser(id string, user entity.User) (entity.UserInfor, error) {
-	_, err := ur.db.Model(&user).Where("id = ?", id).UpdateNotZero(&user)
+func (ur *userRepository) UpdateUser(id string, user *entity.User) (entity.UserInfor, error) {
+	_, err := ur.db.Model(user).Where("id = ?", id).UpdateNotZero(user)
 	return user.GetInfor(), err
 }
 
@@ -113,7 +114,12 @@ func (ur *userRepository) UpdateUserByEmail(email string, user entity.User) (boo
 
 func (ur *userRepository) DeleteByID(id string) error {
 	var user entity.User
-	_, err := ur.db.Model(&user).Where("id = ?", id).Delete()
+	now := time.Now().UTC()
+	_, err := ur.db.Model(&user).Where("id = ?", id).
+		Where("is_system = ?", false).
+		Set("deleted_at = ?", now).
+		Set("status = ?", entity.UserStatusDeleted).
+		Update()
 	return err
 }
 

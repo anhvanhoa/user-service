@@ -8,6 +8,7 @@ import (
 	"user-service/domain/usecase/user"
 	"user-service/infrastructure/repo"
 
+	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
 	"github.com/anhvanhoa/service-core/utils"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
 	"github.com/go-pg/pg/v10"
@@ -25,7 +26,9 @@ type userServer struct {
 
 func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer {
 	userRepo := repo.NewUserRepository(db, helper)
+	hashService := hashpass.NewArgon()
 	userUC := user.NewUserUsecase(
+		user.NewCreateUserUsecase(userRepo, hashService),
 		user.NewDeleteUserUsecase(userRepo),
 		user.NewGetUserUsecase(userRepo),
 		user.NewGetUsersUsecase(userRepo, helper),
@@ -58,7 +61,7 @@ func (s *userServer) DeleteUser(ctx context.Context, req *proto_user.DeleteUserR
 }
 
 func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserRequest) (*proto_user.UpdateUserResponse, error) {
-	user := s.createEntityUser(req)
+	user := s.convertReqUpdateToEntity(req)
 	updatedUser, err := s.userUsecase.UpdateUserById(req.Id, user)
 	if err != nil {
 		return nil, err
@@ -94,6 +97,7 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: updatedAt,
 		Birthday:  birthday,
+		IsSystem:  user.IsSystem,
 		DeletedAt: deletedAt,
 	}
 }
@@ -115,16 +119,13 @@ func (s *userServer) createProtoUserInfo(user entity.UserInfor) *proto_user.User
 	}
 }
 
-func (s *userServer) createEntityUser(req *proto_user.UpdateUserRequest) entity.User {
+func (s *userServer) convertReqUpdateToEntity(req *proto_user.UpdateUserRequest) *entity.User {
 	var birthday *time.Time
 	if req.Birthday != nil {
-		birthdayTime, err := time.Parse(time.RFC3339, req.Birthday.String())
-		if err != nil {
-			return entity.User{}
-		}
+		birthdayTime := req.Birthday.AsTime()
 		birthday = &birthdayTime
 	}
-	return entity.User{
+	return &entity.User{
 		ID:       req.Id,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -135,4 +136,32 @@ func (s *userServer) createEntityUser(req *proto_user.UpdateUserRequest) entity.
 		Status:   entity.UserStatus(req.Status),
 		Birthday: birthday,
 	}
+}
+
+func (s *userServer) CreateUser(ctx context.Context, req *proto_user.CreateUserRequest) (*proto_user.CreateUserResponse, error) {
+	user := s.convertReqCreateToEntity(req)
+	createdUser, err := s.userUsecase.CreateUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return &proto_user.CreateUserResponse{
+		User: s.createProtoUser(createdUser),
+	}, nil
+}
+
+func (s *userServer) convertReqCreateToEntity(req *proto_user.CreateUserRequest) *entity.User {
+	u := &entity.User{
+		Email:    req.Email,
+		Phone:    req.Phone,
+		FullName: req.FullName,
+		Avatar:   req.Avatar,
+		Bio:      req.Bio,
+		Address:  req.Address,
+		Password: req.Password,
+	}
+	if req.Birthday != nil {
+		birthdayTime := req.Birthday.AsTime()
+		u.Birthday = &birthdayTime
+	}
+	return u
 }

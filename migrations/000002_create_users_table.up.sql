@@ -21,6 +21,7 @@ CREATE TABLE
         address VARCHAR(255),
         status user_status,
         deleted_at TIMESTAMP DEFAULT NULL,
+        is_system BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
