@@ -1,76 +1,31 @@
 package user
 
-import (
-	"context"
-	"user-service/domain/entity"
-
-	"github.com/anhvanhoa/service-core/common"
-)
-
-type UserUsecaseI interface {
-	CreateUser(data *entity.User) (entity.User, error)
-	GetUserById(id string) (entity.User, error)
-	GetUsers(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error)
-	DeleteUserById(id string) error
-	UpdateUserById(id string, data *entity.User) (entity.UserInfor, error)
-	LockUser(ctx context.Context, id string, reason string, by string) error
-	UnlockUser(ctx context.Context, id string) error
-}
-
-type userUsecase struct {
-	createUserUsecase CreateUserUsecase
-	deleteUserUsecase DeleteUserUsecase
-	getUserUsecase    GetUserUsecase
-	getUsersUsecase   GetUsersUsecase
-	updateUserUsecase UpdateUserUsecase
-	lockUserUsecase   LockUserUsecase
-	unlockUserUsecase UnlockUserUsecase
+type UserUsecase struct {
+	CreateUserUsecase CreateUserUsecase
+	DeleteUserUsecase DeleteUserUsecase
+	GetUserUsecase    GetUserUsecase
+	GetUsersUsecase   GetUsersUsecase
+	UpdateUserUsecase UpdateUserUsecase
+	LockUserUsecase   LockUserUsecase
+	UnlockUserUsecase UnlockUserUsecase
 }
 
 func NewUserUsecase(
-	createUserUsecase CreateUserUsecase,
-	deleteUserUsecase DeleteUserUsecase,
-	getUserUsecase GetUserUsecase,
-	getUsersUsecase GetUsersUsecase,
-	updateUserUsecase UpdateUserUsecase,
-	lockUserUsecase LockUserUsecase,
-	unlockUserUsecase UnlockUserUsecase,
-) UserUsecaseI {
-	return &userUsecase{
-		createUserUsecase: createUserUsecase,
-		deleteUserUsecase: deleteUserUsecase,
-		getUserUsecase:    getUserUsecase,
-		getUsersUsecase:   getUsersUsecase,
-		updateUserUsecase: updateUserUsecase,
-		lockUserUsecase:   lockUserUsecase,
-		unlockUserUsecase: unlockUserUsecase,
+	CreateUserUsecase CreateUserUsecase,
+	DeleteUserUsecase DeleteUserUsecase,
+	GetUserUsecase GetUserUsecase,
+	GetUsersUsecase GetUsersUsecase,
+	UpdateUserUsecase UpdateUserUsecase,
+	LockUserUsecase LockUserUsecase,
+	UnlockUserUsecase UnlockUserUsecase,
+) *UserUsecase {
+	return &UserUsecase{
+		CreateUserUsecase: CreateUserUsecase,
+		DeleteUserUsecase: DeleteUserUsecase,
+		GetUserUsecase:    GetUserUsecase,
+		GetUsersUsecase:   GetUsersUsecase,
+		UpdateUserUsecase: UpdateUserUsecase,
+		LockUserUsecase:   LockUserUsecase,
+		UnlockUserUsecase: UnlockUserUsecase,
 	}
-}
-
-func (u *userUsecase) CreateUser(data *entity.User) (entity.User, error) {
-	return u.createUserUsecase.Excute(data)
-}
-
-func (u *userUsecase) GetUserById(id string) (entity.User, error) {
-	return u.getUserUsecase.Excute(id)
-}
-
-func (u *userUsecase) GetUsers(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error) {
-	return u.getUsersUsecase.Excute(pagination, filter)
-}
-
-func (u *userUsecase) DeleteUserById(id string) error {
-	return u.deleteUserUsecase.Excute(id)
-}
-
-func (u *userUsecase) UpdateUserById(id string, data *entity.User) (entity.UserInfor, error) {
-	return u.updateUserUsecase.Excute(id, data)
-}
-
-func (u *userUsecase) LockUser(ctx context.Context, id string, reason string, by string) error {
-	return u.lockUserUsecase.Excute(ctx, id, reason, by)
-}
-
-func (u *userUsecase) UnlockUser(ctx context.Context, id string) error {
-	return u.unlockUserUsecase.Excute(ctx, id)
 }

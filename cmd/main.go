@@ -22,7 +22,7 @@ func main() {
 	client := clientFactory.GetClient(env.PermissionServiceAddr)
 	permissionClient := grpc_client.NewPermissionClient(client)
 
-	userService := user_server.NewUserServer(db, app.Helper)
+	userService := user_server.NewUserServer(db, app.Helper, permissionClient)
 	sessionService := session_server.NewSessionServer(db, cache)
 	grpcSrv := grpcservice.NewGRPCServer(env, log, cache, userService, sessionService)
 	ctx, cancel := context.WithCancel(context.Background())

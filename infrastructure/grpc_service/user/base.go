@@ -6,6 +6,7 @@ import (
 	"time"
 	"user-service/domain/entity"
 	"user-service/domain/usecase/user"
+	"user-service/infrastructure/grpc_client"
 	"user-service/infrastructure/repo"
 
 	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
@@ -22,10 +23,15 @@ var (
 
 type userServer struct {
 	proto_user.UnsafeUserServiceServer
-	userUsecase user.UserUsecaseI
+	userUsecase      *user.UserUsecase
+	permissionClient *grpc_client.PermissionClientImpl
 }
 
-func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer {
+func NewUserServer(
+	db *pg.DB,
+	helper utils.Helper,
+	permissionClient *grpc_client.PermissionClientImpl,
+) proto_user.UserServiceServer {
 	userRepo := repo.NewUserRepository(db, helper)
 	sessionRepo := repo.NewSessionRepository(db)
 	hashService := hashpass.NewArgon()
@@ -39,12 +45,13 @@ func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer 
 		user.NewUnlockUserUsecase(userRepo),
 	)
 	return &userServer{
-		userUsecase: userUC,
+		userUsecase:      userUC,
+		permissionClient: permissionClient,
 	}
 }
 
 func (s *userServer) GetUserById(ctx context.Context, req *proto_user.GetUserByIdRequest) (*proto_user.GetUserByIdResponse, error) {
-	user, err := s.userUsecase.GetUserById(req.Id)
+	user, err := s.userUsecase.GetUserUsecase.Excute(req.Id)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
@@ -55,7 +62,7 @@ func (s *userServer) GetUserById(ctx context.Context, req *proto_user.GetUserByI
 
 func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserRequest) (*proto_user.UpdateUserResponse, error) {
 	user := s.convertReqUpdateToEntity(req)
-	updatedUser, err := s.userUsecase.UpdateUserById(req.Id, user)
+	updatedUser, err := s.userUsecase.UpdateUserUsecase.Excute(req.Id, user)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +73,7 @@ func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserR
 
 func (s *userServer) LockUser(ctx context.Context, req *proto_user.LockUserRequest) (*proto_user.LockUserResponse, error) {
 	userCtx := user_context.GetUserContext(ctx, user_context.UserContextKey)
-	err := s.userUsecase.LockUser(ctx, req.Id, req.Reason, userCtx.UserID)
+	err := s.userUsecase.LockUserUsecase.Excute(ctx, req.Id, req.Reason, userCtx.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +158,7 @@ func (s *userServer) convertReqUpdateToEntity(req *proto_user.UpdateUserRequest)
 
 func (s *userServer) CreateUser(ctx context.Context, req *proto_user.CreateUserRequest) (*proto_user.CreateUserResponse, error) {
 	user := s.convertReqCreateToEntity(req)
-	createdUser, err := s.userUsecase.CreateUser(user)
+	createdUser, err := s.userUsecase.CreateUserUsecase.Excute(user)
 	if err != nil {
 		return nil, err
 	}

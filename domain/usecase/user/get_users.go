@@ -10,6 +10,7 @@ import (
 
 type GetUsersUsecase interface {
 	Excute(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error)
+	ExtractUserIds(users []entity.User) ([]string, error)
 }
 
 type getUsersUsecase struct {
@@ -37,4 +38,12 @@ func (g *getUsersUsecase) Excute(pagination *common.Pagination, filter *entity.F
 		PageSize:   pagination.PageSize,
 		TotalPages: totalPages,
 	}, nil
+}
+
+func (g *getUsersUsecase) ExtractUserIds(users []entity.User) ([]string, error) {
+	userIds := []string{}
+	for _, user := range users {
+		userIds = append(userIds, user.ID)
+	}
+	return userIds, nil
 }
