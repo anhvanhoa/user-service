@@ -88,21 +88,28 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 	if user.LockedAt != nil {
 		lockedAt = timestamppb.New(*user.LockedAt)
 	}
+	var verified *timestamppb.Timestamp
+	if user.Veryfied != nil {
+		verified = timestamppb.New(*user.Veryfied)
+	}
 	return &proto_user.User{
-		Id:        user.ID,
-		Email:     user.Email,
-		Phone:     user.Phone,
-		FullName:  user.FullName,
-		Avatar:    user.Avatar,
-		Bio:       user.Bio,
-		Address:   user.Address,
-		Status:    string(user.Status),
-		CreatedBy: user.CreatedBy,
-		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: updatedAt,
-		Birthday:  birthday,
-		IsSystem:  user.IsSystem,
-		LockedAt:  lockedAt,
+		Id:           user.ID,
+		Email:        user.Email,
+		Phone:        user.Phone,
+		FullName:     user.FullName,
+		Avatar:       user.Avatar,
+		Bio:          user.Bio,
+		Address:      user.Address,
+		Status:       string(user.Status),
+		CreatedBy:    user.CreatedBy,
+		CreatedAt:    timestamppb.New(user.CreatedAt),
+		UpdatedAt:    updatedAt,
+		Birthday:     birthday,
+		IsSystem:     user.IsSystem,
+		LockedAt:     lockedAt,
+		LockedReason: user.LockedReason,
+		LockedBy:     user.LockedBy,
+		Verified:     verified,
 	}
 }
 
