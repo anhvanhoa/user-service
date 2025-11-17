@@ -8,8 +8,14 @@ github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHc
 github.com/alexedwards/argon2id v1.0.0/go.mod h1:tYKkqIjzXvZdzPvADMWOEZ+l6+BD6CtBXMj5fnJppiw=
 github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130 h1:KyF9G1+8S0cMSrXQ5fZ2swsa1rt51hkvDLtu7k5V8pg=
 github.com/anhvanhoa/service-core v0.0.0-20251029071648-439f705ec130/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
+github.com/anhvanhoa/service-core v0.0.0-20251117034542-2ead777fb551 h1:iobkKjseCWMOBwhaz5UnHXQ4XB7LmGBsxK5etpPnHcA=
+github.com/anhvanhoa/service-core v0.0.0-20251117034542-2ead777fb551/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
+github.com/anhvanhoa/service-core v0.0.0-20251117034728-3b47100ea7b6 h1:BrucdDcmkQVldlff8Vx8tkOPe56EZN7JugtDaMQxbcs=
+github.com/anhvanhoa/service-core v0.0.0-20251117034728-3b47100ea7b6/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
 github.com/anhvanhoa/sf-proto v0.0.0-20251116040232-6243b0ee8b52 h1:2ovpq8RhbUhnrB/e4Iv3dXSaKkxyPeFUwHcpXztRNbo=
 github.com/anhvanhoa/sf-proto v0.0.0-20251116040232-6243b0ee8b52/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251117033027-15a4b603a56f h1:8AATW0ZGDHmulIlPkrATS3jst1NOcxh1r9tU1UXZ8C4=
+github.com/anhvanhoa/sf-proto v0.0.0-20251117033027-15a4b603a56f/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=

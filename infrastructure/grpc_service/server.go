@@ -27,6 +27,7 @@ func NewGRPCServer(
 	}
 	middleware := grpc_service.NewMiddleware(
 		token.NewToken(env.AccessSecret),
+		log,
 	)
 	return grpc_service.NewGRPCServer(
 		config,

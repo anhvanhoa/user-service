@@ -1,7 +1,7 @@
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_status') THEN
-        CREATE TYPE user_status AS ENUM ('active', 'inactive', 'deleted');
+        CREATE TYPE user_status AS ENUM ('active', 'inactive', 'locked');
     END IF;
 END$$;
 
@@ -20,7 +20,9 @@ CREATE TABLE
         veryfied TIMESTAMP DEFAULT NULL,
         address VARCHAR(255),
         status user_status,
-        deleted_at TIMESTAMP DEFAULT NULL,
+        locked_at TIMESTAMP DEFAULT NULL,
+        locked_reason TEXT,
+        locked_by UUID DEFAULT NULL,
         is_system BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

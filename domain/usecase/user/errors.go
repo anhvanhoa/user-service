@@ -11,4 +11,5 @@ var (
 	ErrUserAlreadyExists  = oops.New("Người dùng đã tồn tại")
 	ErrEmailAlreadyExists = oops.New("Email đã tồn tại")
 	ErrPhoneAlreadyExists = oops.New("Số điện thoại đã tồn tại")
+	ErrUserAlreadyLocked  = oops.New("Người dùng đã bị khóa")
 )

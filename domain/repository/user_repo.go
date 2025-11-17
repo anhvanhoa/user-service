@@ -17,5 +17,6 @@ type UserRepository interface {
 	UpdateUser(Id string, data *entity.User) (entity.UserInfor, error)
 	UpdateUserByEmail(email string, data entity.User) (bool, error)
 	DeleteByID(id string) error
+	LockUser(id string, reason string, by string) error
 	Tx(ctx context.Context) UserRepository
 }

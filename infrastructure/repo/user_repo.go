@@ -114,12 +114,19 @@ func (ur *userRepository) UpdateUserByEmail(email string, user entity.User) (boo
 
 func (ur *userRepository) DeleteByID(id string) error {
 	var user entity.User
-	now := time.Now().UTC()
 	_, err := ur.db.Model(&user).Where("id = ?", id).
-		Where("is_system = ?", false).
-		Set("deleted_at = ?", now).
-		Set("status = ?", entity.UserStatusDeleted).
-		Update()
+		Where("is_system = ?", false).Delete()
+	return err
+}
+func (ur *userRepository) LockUser(id string, reason string, by string) error {
+	now := time.Now()
+	var user entity.User = entity.User{
+		LockedAt:     &now,
+		LockedReason: reason,
+		LockedBy:     by,
+		Status:       entity.UserStatusLocked,
+	}
+	_, err := ur.db.Model(&user).Where("id = ?", id).Where("is_system = ?", false).UpdateNotZero(&user)
 	return err
 }
 

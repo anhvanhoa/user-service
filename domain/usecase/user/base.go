@@ -12,6 +12,7 @@ type UserUsecaseI interface {
 	GetUsers(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error)
 	DeleteUserById(id string) error
 	UpdateUserById(id string, data *entity.User) (entity.UserInfor, error)
+	LockUser(id string, reason string, by string) error
 }
 
 type userUsecase struct {
@@ -20,6 +21,7 @@ type userUsecase struct {
 	getUserUsecase    GetUserUsecase
 	getUsersUsecase   GetUsersUsecase
 	updateUserUsecase UpdateUserUsecase
+	lockUserUsecase   LockUserUsecase
 }
 
 func NewUserUsecase(
@@ -28,6 +30,7 @@ func NewUserUsecase(
 	getUserUsecase GetUserUsecase,
 	getUsersUsecase GetUsersUsecase,
 	updateUserUsecase UpdateUserUsecase,
+	lockUserUsecase LockUserUsecase,
 ) UserUsecaseI {
 	return &userUsecase{
 		createUserUsecase: createUserUsecase,
@@ -35,6 +38,7 @@ func NewUserUsecase(
 		getUserUsecase:    getUserUsecase,
 		getUsersUsecase:   getUsersUsecase,
 		updateUserUsecase: updateUserUsecase,
+		lockUserUsecase:   lockUserUsecase,
 	}
 }
 
@@ -56,4 +60,8 @@ func (u *userUsecase) DeleteUserById(id string) error {
 
 func (u *userUsecase) UpdateUserById(id string, data *entity.User) (entity.UserInfor, error) {
 	return u.updateUserUsecase.Excute(id, data)
+}
+
+func (u *userUsecase) LockUser(id string, reason string, by string) error {
+	return u.lockUserUsecase.Excute(id, reason, by)
 }

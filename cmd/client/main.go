@@ -84,29 +84,6 @@ func (c *GRPCClient) TestGetUserById() {
 	fmt.Printf("Birthday: %s\n", resp.User.Birthday.AsTime().Format(time.RFC3339))
 }
 
-func (c *GRPCClient) TestDeleteUserById() {
-	fmt.Println("\n=== Test DeleteUserById ===")
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter user ID to delete: ")
-	userIDStr, _ := reader.ReadString('\n')
-	userIDStr = strings.TrimSpace(userIDStr)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := c.userClient.DeleteUser(ctx, &proto_user.DeleteUserRequest{
-		Id: userIDStr,
-	})
-	if err != nil {
-		fmt.Printf("Error calling DeleteUserById: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Delete result: %s\n", resp.Message)
-	fmt.Printf("Success: %t\n", resp.Success)
-}
-
 func (c *GRPCClient) TestUpdateUserById() {
 	fmt.Println("\n=== Test UpdateUserById ===")
 
@@ -335,7 +312,7 @@ func printMenu() {
 	fmt.Println("\n=== gRPC User Service Test Client ===")
 	fmt.Println("1. User Service Tests")
 	fmt.Println("  1.1 Get User By ID")
-	fmt.Println("  1.2 Delete User By ID")
+	fmt.Println("  1.2 Lock User By ID (Not implemented)")
 	fmt.Println("  1.3 Update User By ID")
 	fmt.Println("2. Session Service Tests")
 	fmt.Println("  2.1 Get All Sessions")
@@ -373,8 +350,6 @@ func main() {
 		switch choice {
 		case "1.1":
 			client.TestGetUserById()
-		case "1.2":
-			client.TestDeleteUserById()
 		case "1.3":
 			client.TestUpdateUserById()
 		case "2.1":

@@ -54,9 +54,9 @@ func (s *userServer) convertFilter(filter *proto_user.UserFilter) *entity.Filter
 	case proto_user.UserStatus_inactive:
 		inactive := entity.UserStatus(string(entity.UserStatusInactive))
 		filterResult.Status = &inactive
-	case proto_user.UserStatus_deleted:
-		deleted := entity.UserStatus(string(entity.UserStatusDeleted))
-		filterResult.Status = &deleted
+	case proto_user.UserStatus_locked:
+		locked := entity.UserStatus(string(entity.UserStatusLocked))
+		filterResult.Status = &locked
 	default:
 		filterResult.Status = nil
 	}

@@ -9,6 +9,7 @@ import (
 	"user-service/infrastructure/repo"
 
 	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 	"github.com/anhvanhoa/service-core/utils"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
 	"github.com/go-pg/pg/v10"
@@ -33,6 +34,7 @@ func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer 
 		user.NewGetUserUsecase(userRepo),
 		user.NewGetUsersUsecase(userRepo, helper),
 		user.NewUpdateUserUsecase(userRepo),
+		user.NewLockUserUsecase(userRepo),
 	)
 	return &userServer{
 		userUsecase: userUC,
@@ -49,17 +51,6 @@ func (s *userServer) GetUserById(ctx context.Context, req *proto_user.GetUserByI
 	}, nil
 }
 
-func (s *userServer) DeleteUser(ctx context.Context, req *proto_user.DeleteUserRequest) (*proto_user.DeleteUserResponse, error) {
-	err := s.userUsecase.DeleteUserById(req.Id)
-	if err != nil {
-		return nil, err
-	}
-	return &proto_user.DeleteUserResponse{
-		Message: "Delete user successfully",
-		Success: true,
-	}, nil
-}
-
 func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserRequest) (*proto_user.UpdateUserResponse, error) {
 	user := s.convertReqUpdateToEntity(req)
 	updatedUser, err := s.userUsecase.UpdateUserById(req.Id, user)
@@ -68,6 +59,17 @@ func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserR
 	}
 	return &proto_user.UpdateUserResponse{
 		UserInfo: s.createProtoUserInfo(updatedUser),
+	}, nil
+}
+
+func (s *userServer) LockUser(ctx context.Context, req *proto_user.LockUserRequest) (*proto_user.LockUserResponse, error) {
+	userCtx := user_context.GetUserContext(ctx, user_context.UserContextKey)
+	err := s.userUsecase.LockUser(req.Id, req.Reason, userCtx.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return &proto_user.LockUserResponse{
+		Message: "Lock user successfully",
 	}, nil
 }
 
@@ -80,9 +82,9 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 	if user.UpdatedAt != nil {
 		updatedAt = timestamppb.New(*user.UpdatedAt)
 	}
-	var deletedAt *timestamppb.Timestamp
-	if user.DeletedAt != nil {
-		deletedAt = timestamppb.New(*user.DeletedAt)
+	var lockedAt *timestamppb.Timestamp
+	if user.LockedAt != nil {
+		lockedAt = timestamppb.New(*user.LockedAt)
 	}
 	return &proto_user.User{
 		Id:        user.ID,
@@ -98,7 +100,7 @@ func (s *userServer) createProtoUser(user entity.User) *proto_user.User {
 		UpdatedAt: updatedAt,
 		Birthday:  birthday,
 		IsSystem:  user.IsSystem,
-		DeletedAt: deletedAt,
+		LockedAt:  lockedAt,
 	}
 }
 
