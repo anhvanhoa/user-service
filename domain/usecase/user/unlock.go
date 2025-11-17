@@ -25,7 +25,7 @@ func (u *unlockUserUsecase) Excute(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	if user.LockedAt == nil || user.Status != entity.UserStatusLocked {
+	if user.LockedAt == nil && user.Status != entity.UserStatusLocked {
 		return ErrUserAlreadyUnlocked
 	}
 	return u.userRepo.UnlockUser(id)

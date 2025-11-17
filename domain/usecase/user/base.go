@@ -43,6 +43,7 @@ func NewUserUsecase(
 		getUsersUsecase:   getUsersUsecase,
 		updateUserUsecase: updateUserUsecase,
 		lockUserUsecase:   lockUserUsecase,
+		unlockUserUsecase: unlockUserUsecase,
 	}
 }
 

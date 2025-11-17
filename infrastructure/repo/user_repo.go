@@ -132,7 +132,8 @@ func (ur *userRepository) LockUser(id string, reason string, by string) error {
 
 func (ur *userRepository) UnlockUser(id string) error {
 	_, err := ur.db.Model(&entity.User{}).Where("id = ?", id).Where("is_system = ?", false).
-		Set("locked_at = NULL", "locked_reason = ''", "locked_by = ''", "status = ?", entity.UserStatusActive).
+		Set("locked_at = NULL", "locked_reason = ''", "locked_by = ''").
+		Set("status = ?", entity.UserStatusActive).
 		Update()
 	return err
 }
