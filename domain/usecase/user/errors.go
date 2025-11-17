@@ -5,8 +5,10 @@ import (
 )
 
 var (
-	ErrGetUsers          = oops.New("Không thể lấy danh sách người dùng")
-	ErrUpdateUser        = oops.New("Không thể cập nhật người dùng")
-	ErrCreateUser        = oops.New("Không thể tạo người dùng")
-	ErrUserAlreadyExists = oops.New("Người dùng đã tồn tại")
+	ErrGetUsers           = oops.New("Không thể lấy danh sách người dùng")
+	ErrUpdateUser         = oops.New("Không thể cập nhật người dùng")
+	ErrCreateUser         = oops.New("Không thể tạo người dùng")
+	ErrUserAlreadyExists  = oops.New("Người dùng đã tồn tại")
+	ErrEmailAlreadyExists = oops.New("Email đã tồn tại")
+	ErrPhoneAlreadyExists = oops.New("Số điện thoại đã tồn tại")
 )

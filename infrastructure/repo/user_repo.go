@@ -36,9 +36,9 @@ func (ur *userRepository) GetUserByEmailOrPhone(val string) (entity.User, error)
 	return user, err
 }
 
-func (ur *userRepository) CheckUserExist(val string) (bool, error) {
+func (ur *userRepository) CheckUserExist(val string, column string) (bool, error) {
 	var user entity.User
-	count, err := ur.db.Model(&user).Where("email = ?", val).Count()
+	count, err := ur.db.Model(&user).Where(column+" = ?", val).Count()
 	isExist := count > 0
 	return isExist, err
 }
