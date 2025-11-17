@@ -15,6 +15,7 @@ type SessionRepository interface {
 	GetSessionsByType(ctx context.Context, sessionType entity.SessionType) ([]entity.Session, error)
 	GetTokensByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) ([]string, error)
 	TokenExists(token string) bool
+	DeleteAllSessionsByUserID(ctx context.Context, userID string) error
 	DeleteSessionByTypeAndUserID(ctx context.Context, sessionType entity.SessionType, userID string) error
 	DeleteSessionByTypeAndToken(ctx context.Context, sessionType entity.SessionType, token string) error
 	DeleteSessionVerifyByUserID(ctx context.Context, userID string) error

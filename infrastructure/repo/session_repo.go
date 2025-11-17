@@ -74,6 +74,16 @@ func (sr *sessionRepositoryImpl) TokenExists(token string) bool {
 	return count > 0
 }
 
+func (sr *sessionRepositoryImpl) DeleteAllSessionsByUserID(ctx context.Context, userID string) error {
+	_, err := sr.db.ModelContext(ctx, &entity.Session{}).
+		Where("user_id = ?", userID).
+		Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (sr *sessionRepositoryImpl) DeleteSessionVerifyByUserID(ctx context.Context, userID string) error {
 	return sr.DeleteSessionByTypeAndUserID(ctx, entity.SessionTypeVerify, userID)
 }

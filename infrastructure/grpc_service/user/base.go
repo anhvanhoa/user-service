@@ -27,6 +27,7 @@ type userServer struct {
 
 func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer {
 	userRepo := repo.NewUserRepository(db, helper)
+	sessionRepo := repo.NewSessionRepository(db)
 	hashService := hashpass.NewArgon()
 	userUC := user.NewUserUsecase(
 		user.NewCreateUserUsecase(userRepo, hashService),
@@ -34,7 +35,8 @@ func NewUserServer(db *pg.DB, helper utils.Helper) proto_user.UserServiceServer 
 		user.NewGetUserUsecase(userRepo),
 		user.NewGetUsersUsecase(userRepo, helper),
 		user.NewUpdateUserUsecase(userRepo),
-		user.NewLockUserUsecase(userRepo),
+		user.NewLockUserUsecase(userRepo, sessionRepo),
+		user.NewUnlockUserUsecase(userRepo),
 	)
 	return &userServer{
 		userUsecase: userUC,
@@ -64,12 +66,12 @@ func (s *userServer) UpdateUser(ctx context.Context, req *proto_user.UpdateUserR
 
 func (s *userServer) LockUser(ctx context.Context, req *proto_user.LockUserRequest) (*proto_user.LockUserResponse, error) {
 	userCtx := user_context.GetUserContext(ctx, user_context.UserContextKey)
-	err := s.userUsecase.LockUser(req.Id, req.Reason, userCtx.UserID)
+	err := s.userUsecase.LockUser(ctx, req.Id, req.Reason, userCtx.UserID)
 	if err != nil {
 		return nil, err
 	}
 	return &proto_user.LockUserResponse{
-		Message: "Lock user successfully",
+		Message: "Khóa người dùng thành công",
 	}, nil
 }
 

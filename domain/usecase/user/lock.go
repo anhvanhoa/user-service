@@ -1,26 +1,29 @@
 package user
 
 import (
+	"context"
 	"user-service/domain/entity"
 	"user-service/domain/repository"
 )
 
 type LockUserUsecase interface {
-	Excute(id string, reason string, by string) error
+	Excute(ctx context.Context, id string, reason string, by string) error
 }
 
 type lockUserUsecase struct {
-	userRepo repository.UserRepository
+	userRepo    repository.UserRepository
+	sessionRepo repository.SessionRepository
 }
 
-func NewLockUserUsecase(userRepo repository.UserRepository) LockUserUsecase {
+func NewLockUserUsecase(userRepo repository.UserRepository, sessionRepo repository.SessionRepository) LockUserUsecase {
 	return &lockUserUsecase{
-		userRepo: userRepo,
+		userRepo:    userRepo,
+		sessionRepo: sessionRepo,
 	}
 
 }
 
-func (l *lockUserUsecase) Excute(id string, reason string, by string) error {
+func (l *lockUserUsecase) Excute(ctx context.Context, id string, reason string, by string) error {
 	user, err := l.userRepo.GetUserByID(id)
 	if err != nil {
 		return err
@@ -28,5 +31,9 @@ func (l *lockUserUsecase) Excute(id string, reason string, by string) error {
 	if user.LockedAt != nil || user.Status == entity.UserStatusLocked {
 		return ErrUserAlreadyLocked
 	}
-	return l.userRepo.LockUser(id, reason, by)
+	err = l.userRepo.LockUser(id, reason, by)
+	if err != nil {
+		return err
+	}
+	return l.sessionRepo.DeleteAllSessionsByUserID(ctx, id)
 }

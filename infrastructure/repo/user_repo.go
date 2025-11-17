@@ -130,6 +130,13 @@ func (ur *userRepository) LockUser(id string, reason string, by string) error {
 	return err
 }
 
+func (ur *userRepository) UnlockUser(id string) error {
+	_, err := ur.db.Model(&entity.User{}).Where("id = ?", id).Where("is_system = ?", false).
+		Set("locked_at = NULL", "locked_reason = ''", "locked_by = ''", "status = ?", entity.UserStatusActive).
+		Update()
+	return err
+}
+
 func (ur *userRepository) Tx(ctx context.Context) repository.UserRepository {
 	tx := getTx(ctx, ur.db)
 	return &userRepository{

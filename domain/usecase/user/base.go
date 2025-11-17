@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"user-service/domain/entity"
 
 	"github.com/anhvanhoa/service-core/common"
@@ -12,7 +13,8 @@ type UserUsecaseI interface {
 	GetUsers(pagination *common.Pagination, filter *entity.FilterUser) (*common.PaginationResult[entity.User], error)
 	DeleteUserById(id string) error
 	UpdateUserById(id string, data *entity.User) (entity.UserInfor, error)
-	LockUser(id string, reason string, by string) error
+	LockUser(ctx context.Context, id string, reason string, by string) error
+	UnlockUser(ctx context.Context, id string) error
 }
 
 type userUsecase struct {
@@ -22,6 +24,7 @@ type userUsecase struct {
 	getUsersUsecase   GetUsersUsecase
 	updateUserUsecase UpdateUserUsecase
 	lockUserUsecase   LockUserUsecase
+	unlockUserUsecase UnlockUserUsecase
 }
 
 func NewUserUsecase(
@@ -31,6 +34,7 @@ func NewUserUsecase(
 	getUsersUsecase GetUsersUsecase,
 	updateUserUsecase UpdateUserUsecase,
 	lockUserUsecase LockUserUsecase,
+	unlockUserUsecase UnlockUserUsecase,
 ) UserUsecaseI {
 	return &userUsecase{
 		createUserUsecase: createUserUsecase,
@@ -62,6 +66,10 @@ func (u *userUsecase) UpdateUserById(id string, data *entity.User) (entity.UserI
 	return u.updateUserUsecase.Excute(id, data)
 }
 
-func (u *userUsecase) LockUser(id string, reason string, by string) error {
-	return u.lockUserUsecase.Excute(id, reason, by)
+func (u *userUsecase) LockUser(ctx context.Context, id string, reason string, by string) error {
+	return u.lockUserUsecase.Excute(ctx, id, reason, by)
+}
+
+func (u *userUsecase) UnlockUser(ctx context.Context, id string) error {
+	return u.unlockUserUsecase.Excute(ctx, id)
 }
