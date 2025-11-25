@@ -8,6 +8,7 @@ type UserUsecase struct {
 	UpdateUserUsecase UpdateUserUsecase
 	LockUserUsecase   LockUserUsecase
 	UnlockUserUsecase UnlockUserUsecase
+	GetUserMapUsecase GetUserMapUsecase
 }
 
 func NewUserUsecase(
@@ -18,6 +19,7 @@ func NewUserUsecase(
 	UpdateUserUsecase UpdateUserUsecase,
 	LockUserUsecase LockUserUsecase,
 	UnlockUserUsecase UnlockUserUsecase,
+	GetUserMapUsecase GetUserMapUsecase,
 ) *UserUsecase {
 	return &UserUsecase{
 		CreateUserUsecase: CreateUserUsecase,
@@ -27,5 +29,6 @@ func NewUserUsecase(
 		UpdateUserUsecase: UpdateUserUsecase,
 		LockUserUsecase:   LockUserUsecase,
 		UnlockUserUsecase: UnlockUserUsecase,
+		GetUserMapUsecase: GetUserMapUsecase,
 	}
 }

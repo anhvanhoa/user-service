@@ -10,6 +10,7 @@ import (
 	"user-service/infrastructure/repo"
 
 	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
+	"github.com/anhvanhoa/service-core/domain/log"
 	"github.com/anhvanhoa/service-core/domain/user_context"
 	"github.com/anhvanhoa/service-core/utils"
 	proto_user "github.com/anhvanhoa/sf-proto/gen/user/v1"
@@ -23,6 +24,7 @@ var (
 
 type userServer struct {
 	proto_user.UnsafeUserServiceServer
+	log              log.Logger
 	userUsecase      *user.UserUsecase
 	permissionClient *grpc_client.PermissionClientImpl
 }
@@ -30,6 +32,7 @@ type userServer struct {
 func NewUserServer(
 	db *pg.DB,
 	helper utils.Helper,
+	log log.Logger,
 	permissionClient *grpc_client.PermissionClientImpl,
 ) proto_user.UserServiceServer {
 	userRepo := repo.NewUserRepository(db, helper)
@@ -43,8 +46,10 @@ func NewUserServer(
 		user.NewUpdateUserUsecase(userRepo),
 		user.NewLockUserUsecase(userRepo, sessionRepo),
 		user.NewUnlockUserUsecase(userRepo),
+		user.NewGetUserMapUsecase(userRepo),
 	)
 	return &userServer{
+		log:              log,
 		userUsecase:      userUC,
 		permissionClient: permissionClient,
 	}

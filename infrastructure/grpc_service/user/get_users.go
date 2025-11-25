@@ -2,7 +2,6 @@ package user_server
 
 import (
 	"context"
-	"fmt"
 	"user-service/domain/entity"
 
 	"github.com/anhvanhoa/service-core/common"
@@ -31,14 +30,15 @@ func (s *userServer) GetUsers(ctx context.Context, req *proto_user.GetUsersReque
 	}
 
 	// 3️⃣ Lấy roles cho tất cả user
-	userRoles, err := s.permissionClient.UserRoleServiceClient.GetUserRoles(ctx, &proto_user_role.GetUserRolesRequest{
-		UserIds: userIds,
-	})
-	if err != nil {
-		fmt.Println("Error getting user roles:", err)
-		// fallback: map rỗng nếu service lỗi
-		userRoles = &proto_user_role.GetUserRolesResponse{
-			UserRoleMap: make(map[string]*proto_user_role.RoleList),
+	userRoles := &proto_user_role.GetUserRolesResponse{
+		UserRoleMap: make(map[string]*proto_user_role.RoleList),
+	}
+	if s.permissionClient.UserRoleServiceClient != nil {
+		userRoles, err = s.permissionClient.UserRoleServiceClient.GetUserRoles(ctx, &proto_user_role.GetUserRolesRequest{
+			UserIds: userIds,
+		})
+		if err != nil {
+			s.log.Error("Error getting user roles: " + err.Error())
 		}
 	}
 

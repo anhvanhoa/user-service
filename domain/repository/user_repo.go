@@ -19,5 +19,6 @@ type UserRepository interface {
 	DeleteByID(id string) error
 	LockUser(id string, reason string, by string) error
 	UnlockUser(id string) error
+	GetUserMap(userIds []string) (map[string]entity.User, error)
 	Tx(ctx context.Context) UserRepository
 }

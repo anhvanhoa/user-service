@@ -138,6 +138,16 @@ func (ur *userRepository) UnlockUser(id string) error {
 	return err
 }
 
+func (ur *userRepository) GetUserMap(userIds []string) (map[string]entity.User, error) {
+	var users []entity.User
+	err := ur.db.Model(&users).Where("id IN (?)", pg.In(userIds)).Select()
+	usersMap := make(map[string]entity.User)
+	for _, user := range users {
+		usersMap[user.ID] = user
+	}
+	return usersMap, err
+}
+
 func (ur *userRepository) Tx(ctx context.Context) repository.UserRepository {
 	tx := getTx(ctx, ur.db)
 	return &userRepository{
